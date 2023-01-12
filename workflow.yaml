@@ -1,3 +1,4 @@
+name: 'Common checks'
 on: pull_request
 
 jobs:
