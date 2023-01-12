@@ -1,4 +1,4 @@
-name: 'Common checks'
+name: Common checks
 on: pull_request
 
 jobs:
