@@ -14,4 +14,5 @@ jobs:
         github_token: ${{ secrets.GH_TOKEN }}
         reporter: 'github-pr-check'
         tool_name: 'testtool'
+        level: [info,warning,error]
         filter_mode: 'file'
