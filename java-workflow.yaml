@@ -45,7 +45,7 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-gradle
     - name: Report test coverage
-      run: gradle test jacocoTestReport sonarqube
+      run: ./gradlew test jacocoTestReport sonarqube
     - name: Build and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
