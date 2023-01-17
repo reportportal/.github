@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - develop
+    paths-ignore:
+      - readme.md
+      - README.md
+      - CHANGELOG.md
   pull_request:
     types: [opened, synchronize, reopened]
 
