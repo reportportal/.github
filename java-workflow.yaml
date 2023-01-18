@@ -14,7 +14,6 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  
   reviewdog:
     runs-on: ubuntu-latest
     name: Java Checkstyle
