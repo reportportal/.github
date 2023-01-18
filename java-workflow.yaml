@@ -15,7 +15,7 @@ on:
 
 jobs:
   
-  sonarcloud:
+  reviewdog:
     runs-on: ubuntu-latest
     name: Java Check style
     steps:
@@ -28,7 +28,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: 'github-pr-check'
-   reviewdog:
+   sonarcloud:
     runs-on: ubuntu-latest
     name: SonarCloud
     steps:
