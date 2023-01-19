@@ -15,7 +15,7 @@ on:
 
 jobs:
   reviewdog:
-    if: contains(fromJSON('["reportportal/service-api", "'reportportal/service-api"]'), github.repository)
+    if: contains(fromJSON('["reportportal/service-api", "'reportportal/commons-dao"]'), github.repository)
     runs-on: ubuntu-latest
     name: Java Checkstyle
     steps:
