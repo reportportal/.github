@@ -15,6 +15,7 @@ on:
 
 jobs:
   reviewdog:
+    if: contains(fromJSON('["reportportal/service-api", "'reportportal/service-api"]'), github.repository)
     runs-on: ubuntu-latest
     name: Java Checkstyle
     steps:
@@ -28,6 +29,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: 'github-pr-check'
   sonarcloud:
+    if: contains(fromJSON('["reportportal/service-api", "reportportal/commons-dao"]'), github.repository)
     runs-on: ubuntu-latest
     name: SonarCloud
     steps:
