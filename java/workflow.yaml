@@ -27,7 +27,7 @@ jobs:
       uses: nikitasavinov/checkstyle-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        reporter: 'github-pr-check'
+        reporter: 'github-pr-review'
   sonarcloud:
     if: contains(fromJSON('["reportportal/service-api", "reportportal/commons-dao"]'), github.repository)
     runs-on: ubuntu-latest
