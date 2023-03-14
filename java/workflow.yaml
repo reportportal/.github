@@ -15,7 +15,7 @@ on:
 
 jobs:
   reviewdog:
-    if: contains(fromJSON('["reportportal/commons-dao"]'), github.repository)
+    if: contains(fromJSON('[""]'), github.repository)
     runs-on: ubuntu-latest
     name: Java Checkstyle
     steps:
