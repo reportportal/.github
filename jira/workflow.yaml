@@ -1,8 +1,5 @@
 name: Update Jira Issues Fix Versions for Service Release
 
-env:
-  python_requirements_file: https://raw.githubusercontent.com/reportportal/jira-versions-sync/main/requirements.txt
-  python_script: https://raw.githubusercontent.com/reportportal/jira-versions-sync/main/main_test.py
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -16,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Install Python
         uses: actions/setup-python@v4
         with:
