@@ -14,6 +14,18 @@ on:
     branches:
       - main
       - master
+  create:
+    branches:
+      - 'rc/[0-9]*'
+      - 'hotfix/[0-9]*'
+  workflow_dispatch:
+    inputs:
+      JIRA_FIX_VERSION:
+        description: 'Jira Fix Version'
+        required: false
+      LATEST_RELEASE_TAG:
+        description: 'Latest Release Tag'
+        required: false
 jobs:
   sync-service-versions-with-jira:
     runs-on: ubuntu-latest
@@ -31,3 +43,5 @@ jobs:
         env:
           JIRA_SERVER: ${{ vars.JIRA_SERVER }}
           JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_FIX_VERSION: ${{ inputs.JIRA_FIX_VERSION }}
+          LATEST_RELEASE_TAG: ${{ inputs.LATEST_RELEASE_TAG }}
