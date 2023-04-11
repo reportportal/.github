@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.repo.branches_url }}
           fetch-depth: 0
       - name: Install Python
         uses: actions/setup-python@v4
