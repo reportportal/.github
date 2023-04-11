@@ -1,18 +1,6 @@
 name: Update Jira Issues Fix Versions for Service Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      JIRA_FIX_VERSION:
-        description: 'Jira Fix Version'
-        required: false
-      LATEST_RELEASE_TAG:
-        description: 'Latest Release Tag'
-        required: false
-  created:
-    branches:
-      - 'rc/[0-9]*'
-      - 'hotfix/[0-9]*'
   push:
     branches:
       - 'rc/[0-9]+.[0-9]*'
@@ -21,6 +9,20 @@ on:
       - 'readme.md'
       - 'README.md'
       - 'LICENSE'
+  created:
+    branches:
+      - 'rc/[0-9]*'
+      - 'hotfix/[0-9]*'
+  workflow_dispatch:
+    inputs:
+      JIRA_FIX_VERSION:
+        description: 'Jira Fix Version'
+        required: false
+      LATEST_RELEASE_TAG:
+        description: 'Latest Release Tag'
+        required: false
+
+
 jobs:
   sync-service-versions-with-jira:
     runs-on: ubuntu-latest
