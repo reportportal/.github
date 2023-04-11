@@ -1,11 +1,15 @@
 name: Update Jira Issues Fix Versions for Service Release
 
+env:
+  python_requirements_file: https://raw.githubusercontent.com/reportportal/jira-versions-sync/main/requirements.txt
+  python_script: https://raw.githubusercontent.com/reportportal/jira-versions-sync/main/main_test.py
 on:
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - main
       - master
+
 jobs:
   sync-service-versions-with-jira:
     runs-on: ubuntu-latest
@@ -18,8 +22,8 @@ jobs:
           python-version: 3.11
       - name: Install dependencies
         run: pip install -r https://raw.githubusercontent.com/reportportal/jira-versions-sync/main/requirements.txt
-      - name: Sync versions
-        run: python https://raw.githubusercontent.com/reportportal/jira-versions-sync/main/main_test.py
+      - name: Update Jira Issues
+        run: python3 -c "$(wget -q -O - https://raw.githubusercontent.com/reportportal/jira-versions-sync/main/main_test.py)"
         env:
           JIRA_SERVER: ${{ vars.JIRA_SERVER }}
           JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
