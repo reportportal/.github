@@ -9,7 +9,11 @@ on:
       - 'readme.md'
       - 'README.md'
       - 'LICENSE'
-
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - master
 jobs:
   sync-service-versions-with-jira:
     runs-on: ubuntu-latest
