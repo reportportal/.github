@@ -9,10 +9,6 @@ on:
       - 'readme.md'
       - 'README.md'
       - 'LICENSE'
-  created:
-    branches:
-      - 'rc/[0-9]*'
-      - 'hotfix/[0-9]*'
   workflow_dispatch:
     inputs:
       JIRA_FIX_VERSION:
