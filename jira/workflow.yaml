@@ -1,4 +1,4 @@
-name: Update Jira Issues Fix Version
+name: Update Jira Fix Version
 on:
   pull_request:
     types: [opened, synchronize, reopened]
