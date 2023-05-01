@@ -17,8 +17,6 @@
   <a href="https://www.lambdatest.com/" target="blank"><img src="https://user-images.githubusercontent.com/11332788/230135399-6d839d7f-0dbe-45bf-8f72-dee3a5d69e17.svg" alt="lambdaTest a27c44">
 </p>
 
-# ReportPortal.io
-
 Report Portal organized into multiple repositories.
 
 Application Core based on micro-services architecture and includes next mandatory services:
