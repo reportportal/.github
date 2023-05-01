@@ -47,7 +47,7 @@ What technologies are used?
         <path d="M14.21 0h3.104v2.865H14.21zM14.21 3.422h3.104v2.865H14.21zM10.549 3.422h3.104v2.865h-3.104zM6.889 3.422h3.104v2.865H6.889zM3.228 6.764h3.104v2.865H3.228zM6.889 6.764h3.104v2.865H6.889zM10.549 6.764h3.104v2.865h-3.104zM14.21 6.764h3.104v2.865H14.21zM17.87 6.764h3.104v2.865H17.87z"></path>
     </g>
   </svg><br>
-  Install ReportPortal
+  <b>Install ReportPortal</b>
 </a></p>
 
 ## Repositories structure
@@ -58,27 +58,28 @@ Application Core based on micro-services architecture and includes next mandator
 ![structure](https://raw.githubusercontent.com/reportportal/reportportal/master/public/rp_repo_structure.png)
 
 ReportPortal **server side** consists of the following services:
-- [`service-authorization`](https://github.com/reportportal/service-authorization) Authorization Service. In charge of access tokens distribution
-- [`service-api`](https://github.com/reportportal/service-api) API Service. Application Backend
-- [`service-ui`](https://github.com/reportportal/service-ui) UI Service. Application Frontend
-- [`service-index`](https://github.com/reportportal/service-index) Index Service. Info and health checks per service.
-- [`service-analyzer`](https://github.com/reportportal/service-auto-analyzer) Analyzer Service. Finds most relevant test fail problem.
-- [`gateway`](https://github.com/containous/traefik) Traefik Gateway Service. Main entry point to application. Port used by gateway should be opened and accessible from outside network.
-- [`rabbitmq`](https://github.com/rabbitmq) Load balancer for client requests. Bus for messages between servers.
-- [`minio`](https://github.com/minio/minio) Attachments storage.
+
+* [`service-authorization`](https://github.com/reportportal/service-authorization) Authorization Service. In charge of access tokens distribution
+* [`service-api`](https://github.com/reportportal/service-api) API Service. Application Backend
+* [`service-ui`](https://github.com/reportportal/service-ui) UI Service. Application Frontend
+* [`service-index`](https://github.com/reportportal/service-index) Index Service. Info and health checks per service.
+* [`service-analyzer`](https://github.com/reportportal/service-auto-analyzer) Analyzer Service. Finds most relevant test fail problem.
+* [`gateway`](https://github.com/containous/traefik) Traefik Gateway Service. Main entry point to application. Port used by gateway should be opened and accessible from outside network.
+* [`rabbitmq`](https://github.com/rabbitmq) Load balancer for client requests. Bus for messages between servers.
+* [`minio`](https://github.com/minio/minio) Attachments storage.
 
 Available plugins developed by ReportPortal team:
 
-- [`plugin-bts-jira`](https://github.com/reportportal/plugin-bts-jira) JIRA Plugin. Interaction with JIRA. [Link to download](https://search.maven.org/search?q=g:%22com.epam.reportportal%22%20AND%20a:%22plugin-bts-jira%22)
-- [`plugin-bts-rally`](https://github.com/reportportal/plugin-bts-rally) Rally Plugin. Interaction with Rally. [Link to download](https://search.maven.org/search?q=g:%22com.epam.reportportal%22%20AND%20a:%22plugin-bts-rally%22) 
-- [`plugin-saucelabs`](https://github.com/reportportal/plugin-saucelabs) Sauce Labs Plugin. Interaction with Sauce Labs. [Link to download](https://search.maven.org/search?q=g:%22com.epam.reportportal%22%20AND%20a:%22plugin-saucelabs%22)
+* [`plugin-bts-jira`](https://github.com/reportportal/plugin-bts-jira) JIRA Plugin. Interaction with JIRA. [Link to download](https://search.maven.org/search?q=g:%22com.epam.reportportal%22%20AND%20a:%22plugin-bts-jira%22)
+* [`plugin-bts-rally`](https://github.com/reportportal/plugin-bts-rally) Rally Plugin. Interaction with Rally. [Link to download](https://search.maven.org/search?q=g:%22com.epam.reportportal%22%20AND%20a:%22plugin-bts-rally%22)
+* [`plugin-saucelabs`](https://github.com/reportportal/plugin-saucelabs) Sauce Labs Plugin. Interaction with Sauce Labs. [Link to download](https://search.maven.org/search?q=g:%22com.epam.reportportal%22%20AND%20a:%22plugin-saucelabs%22)
 
 **Client side** adapters related repositories:
 
-- [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-) - API integrations. Http clients, which process HTTP request sending.
-- [`agent-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=agent-) - Frameworks integration. Custom reporters/listeners, which monitor test events and trigger event sending via [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-)
-- [`logger-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=logger-) - Logging integration. Logger appenders, which help to collect logs, bind it with test-case item via `agent-*` and send to server via `client-*`
+* [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-) - API integrations. Http clients, which process HTTP request sending.
+* [`agent-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=agent-) - Frameworks integration. Custom reporters/listeners, which monitor test events and trigger event sending via [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-)
+* [`logger-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=logger-) - Logging integration. Logger appenders, which help to collect logs, bind it with test-case item via `agent-*` and send to server via `client-*`
 
 **Other repositories** stored according to next rules
-- [`service-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=service-) - micro-services which are a part of Application
-- [`commons-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=commons-) - common libraries, models, etc., used by micro-services
+* [`service-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=service-) - micro-services which are a part of Application
+* [`commons-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=commons-) - common libraries, models, etc., used by micro-services
