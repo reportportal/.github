@@ -23,6 +23,10 @@ ReportPortal is a service, that provides increased capabilities to speed up resu
 
 ReportPortal is a great addition to Continuous Integration and Continuous Testing process.
 
+<p align="center" style="padding: 1em;">
+<a href="https://reportportal.io/installation" target="blank"><b>Install ReportPortal</b></a>
+</p>
+
 What ReportPortal can do?
 
 * Mainstream platforms integration ReportPortal seamlessly integrates with mainstream platforms such as Jenkins, Jira, BDD process, majority of Functional and Unit testing frameworks.
@@ -38,17 +42,6 @@ What technologies are used?
 * PostgreSQL - The World's Most Advanced Open Source Relational Database.
 * REST Web Service - lightweight requests, industry standard.
 * Mobile responsive UI - check it at any mobile device with the default browser.
-
-<p align="center" style="padding: 1em;">
-<a href="https://reportportal.io/installation" target="blank">
-  <svg xmlns="http://www.w3.org/2000/svg" width="31" height="22" viewBox="0 0 31 22">
-    <g fill="#39C2D7" fill-rule="nonzero">
-        <path stroke="#FFF" stroke-width=".7" d="M26.624 7.958c-.08-1.194-.716-2.228-1.83-3.104l-.398-.318-.319.398c-.557.875-.795 1.99-.716 2.944.08.637.318 1.353.716 1.83-.318.24-1.352.717-2.705.717H1.318c-.398 2.148.239 10.265 9.55 10.265 6.923 0 12.573-3.103 15.199-9.629.875 0 3.103.16 4.217-1.99l.319-.556-.398-.319c-.716-.397-2.388-.557-3.581-.238z"></path>
-        <path d="M14.21 0h3.104v2.865H14.21zM14.21 3.422h3.104v2.865H14.21zM10.549 3.422h3.104v2.865h-3.104zM6.889 3.422h3.104v2.865H6.889zM3.228 6.764h3.104v2.865H3.228zM6.889 6.764h3.104v2.865H6.889zM10.549 6.764h3.104v2.865h-3.104zM14.21 6.764h3.104v2.865H14.21zM17.87 6.764h3.104v2.865H17.87z"></path>
-    </g>
-  </svg><br>
-  <b>Install ReportPortal</b>
-</a></p>
 
 ## Repositories structure
 
