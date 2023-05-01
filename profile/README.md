@@ -19,13 +19,13 @@
 
 ## Overview
 
+<p align="center" style="padding: 1em;">
+  <a href="https://reportportal.io/installation" target="blank"><b>Install ReportPortal</b></a>
+</p>
+
 ReportPortal is a service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
 
 ReportPortal is a great addition to Continuous Integration and Continuous Testing process.
-
-<p align="center" style="padding: 1em;">
-<a href="https://reportportal.io/installation" target="blank"><b>Install ReportPortal</b></a>
-</p>
 
 What ReportPortal can do?
 
