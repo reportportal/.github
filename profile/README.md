@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://reportportal.io" target="blank"><img src="https://raw.githubusercontent.com/reportportal/.github/profile/profile/assets/Github_Header1.jpg" alt="ReportPortal"></a>
+  <a href="https://reportportal.io" target="blank"><img src="https://raw.githubusercontent.com/reportportal/.github/profile/profile/assets/github_header.jpg" alt="ReportPortal"></a>
 </p>
 
 ---
@@ -10,18 +10,11 @@
   <a href="https://reportportal.io/community" target="blank"><img src="https://img.shields.io/badge/contributors-102-blue.svg" alt="GitHub contributors"></a>
   <a href="https://hub.docker.com/u/reportportal/" target="blank"><img src="https://img.shields.io/docker/pulls/reportportal/service-api.svg?maxAge=25920" alt="Docker Pulls"></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0" target="blank"><img src="https://img.shields.io/badge/license-Apache-brightgreen.svg" alt="License"></a>
+  <a href="https://www.lambdatest.com/" target="blank"><img src="https://img.shields.io/badge/Tested%20on-LambdaTest-blue" alt="lambdaTest a27c44"></a>
   <a href="http://reportportal.io?style=flat" target="blank"><img src="https://img.shields.io/badge/build%20with-❤%EF%B8%8F%E2%80%8D-lightgrey.svg" alt="Build with Love"></a>
 </p>
 
-<p align="center">
-  <a href="https://www.lambdatest.com/" target="blank"><img src="https://user-images.githubusercontent.com/11332788/230135399-6d839d7f-0dbe-45bf-8f72-dee3a5d69e17.svg" alt="lambdaTest a27c44"></a>
-</p>
-
 ## Overview
-
-<p align="center" style="padding: 1em;">
-  <a href="https://reportportal.io/installation" target="blank"><b>Install ReportPortal</b></a>
-</p>
 
 ReportPortal is a service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
 
@@ -42,6 +35,10 @@ What technologies are used?
 * PostgreSQL - The World's Most Advanced Open Source Relational Database.
 * REST Web Service - lightweight requests, industry standard.
 * Mobile responsive UI - check it at any mobile device with the default browser.
+
+<p align="center" style="padding: 1em;">
+  <a href="https://reportportal.io/installation" target="blank"><img src="https://raw.githubusercontent.com/reportportal/.github/profile/profile/assets/install_banner.png" alt="Install ReportPortal"></a>
+</p>
 
 ## Repositories structure
 
