@@ -36,7 +36,7 @@ What technologies are used?
 * REST Web Service - lightweight requests, industry standard.
 * Mobile responsive UI - check it at any mobile device with the default browser.
 
-<p align="center" style="padding: 1em;">
+<p align="center">
   <a href="https://reportportal.io/installation" target="blank"><img src="https://raw.githubusercontent.com/reportportal/.github/profile/profile/assets/install_banner.png" alt="Install ReportPortal"></a>
 </p>
 
