@@ -70,6 +70,6 @@ Available plugins developed by ReportPortal team:
 * [`logger-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=logger-) - Logging integration. Logger appenders, which help to collect logs, bind it with test-case item via `agent-*` and send to server via [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-).
 
 **Other repositories** stored according to next rules:
-* [`service-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=service-) - micro-services which are a part of Application.
-* [`commons-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=commons-) - common libraries, models, etc., used by micro-services.
+* [`service-*`](https://github.com/orgs/reportportal/repositories?q=service-&type=all) - micro-services which are a part of Application.
+* [`commons-*`](https://github.com/orgs/reportportal/repositories?q=commons-&type=all) - common libraries, models, etc., used by micro-services.
 * [`plugin-*`](https://github.com/orgs/reportportal/repositories?q=plugin-&type=all) - functionality extentions, integrastions, etc for ReportPortal.
