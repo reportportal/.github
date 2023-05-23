@@ -47,8 +47,8 @@ Application Core based on micro-services architecture and includes next mandator
 ReportPortal **server side** consists of the following services:
 
 * [`service-authorization`](https://github.com/reportportal/service-authorization) Authorization Service. In charge of access tokens distribution
-* [`service-api`](https://github.com/reportportal/service-api) API Service. Application Backend
-* [`service-ui`](https://github.com/reportportal/service-ui) UI Service. Application Frontend
+* [`service-api`](https://github.com/reportportal/service-api) API Service. Application Backend.
+* [`service-ui`](https://github.com/reportportal/service-ui) UI Service. Application Frontend.
 * [`service-index`](https://github.com/reportportal/service-index) Index Service. Info and health checks per service.
 * [`service-analyzer`](https://github.com/reportportal/service-auto-analyzer) Analyzer Service. Finds most relevant test fail problem.
 * [`gateway`](https://github.com/containous/traefik) Traefik Gateway Service. Main entry point to application. Port used by gateway should be opened and accessible from outside network.
@@ -57,16 +57,19 @@ ReportPortal **server side** consists of the following services:
 
 Available plugins developed by ReportPortal team:
 
-* [`plugin-bts-jira`](https://github.com/reportportal/plugin-bts-jira) JIRA Plugin. Interaction with JIRA. [Link to download](https://search.maven.org/search?q=g:%22com.epam.reportportal%22%20AND%20a:%22plugin-bts-jira%22)
-* [`plugin-bts-rally`](https://github.com/reportportal/plugin-bts-rally) Rally Plugin. Interaction with Rally. [Link to download](https://search.maven.org/search?q=g:%22com.epam.reportportal%22%20AND%20a:%22plugin-bts-rally%22)
-* [`plugin-saucelabs`](https://github.com/reportportal/plugin-saucelabs) Sauce Labs Plugin. Interaction with Sauce Labs. [Link to download](https://search.maven.org/search?q=g:%22com.epam.reportportal%22%20AND%20a:%22plugin-saucelabs%22)
+* [`plugin-bts-jira`](https://github.com/reportportal/plugin-bts-jira) JIRA Plugin. Interaction with JIRA.
+* [`plugin-bts-rally`](https://github.com/reportportal/plugin-bts-rally) Rally Plugin. Interaction with Rally.
+* [`plugin-saucelabs`](https://github.com/reportportal/plugin-saucelabs) Sauce Labs Plugin. Interaction with Sauce Labs.
+* [`plugin-bts-jira`](https://github.com/reportportal/plugin-bts-jira) Jira bug tracking system integration for ReportPortal.
+* [`plugin-bts-rally`](https://github.com/reportportal/plugin-bts-rally)  Rally bug tracking system integration for ReportPortal.
 
 **Client side** adapters related repositories:
 
 * [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-) - API integrations. Http clients, which process HTTP request sending.
-* [`agent-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=agent-) - Frameworks integration. Custom reporters/listeners, which monitor test events and trigger event sending via [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-)
-* [`logger-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=logger-) - Logging integration. Logger appenders, which help to collect logs, bind it with test-case item via `agent-*` and send to server via `client-*`
+* [`agent-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=agent-) - Frameworks integration. Custom reporters/listeners, which monitor test events and trigger event sending via [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-).
+* [`logger-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=logger-) - Logging integration. Logger appenders, which help to collect logs, bind it with test-case item via `agent-*` and send to server via [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-).
 
 **Other repositories** stored according to next rules
-* [`service-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=service-) - micro-services which are a part of Application
-* [`commons-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=commons-) - common libraries, models, etc., used by micro-services
+* [`service-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=service-) - micro-services which are a part of Application.
+* [`commons-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=commons-) - common libraries, models, etc., used by micro-services.
+* [`plugin-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=plugin-) - functionality extentions, integrastions, etc for ReportPortal.
