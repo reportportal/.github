@@ -65,9 +65,9 @@ Available plugins developed by ReportPortal team:
 
 **Client side** adapters related repositories:
 
-* [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-) - API integrations. Http clients, which process HTTP request sending.
-* [`agent-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=agent-) - Frameworks integration. Custom reporters/listeners, which monitor test events and trigger event sending via [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-).
-* [`logger-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=logger-) - Logging integration. Logger appenders, which help to collect logs, bind it with test-case item via `agent-*` and send to server via [`client-*`](https://github.com/reportportal?utf8=%E2%9C%93&q=client-).
+* [`client-*`](https://github.com/reportportal/repositories?q=client-) - API integrations. Http clients, which process HTTP request sending.
+* [`agent-*`](https://github.com/reportportal/repositories?q=agent-) - Frameworks integration. Custom reporters/listeners, which monitor test events and trigger event sending via [`client-*`](https://github.com/reportportal/repositories?q=client-).
+* [`logger-*`](https://github.com/reportportal/repositories?q=logger-) - Logging integration. Logger appenders, which help to collect logs, bind it with test-case item via `agent-*` and send to server via [`client-*`](https://github.com/reportportal/repositories?q=client-).
 
 **Other repositories** stored according to next rules:
 * [`service-*`](https://github.com/orgs/reportportal/repositories?q=service-&type=all) - micro-services which are a part of Application.
