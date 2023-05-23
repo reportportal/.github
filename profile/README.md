@@ -16,25 +16,22 @@
 
 ## Overview
 
-ReportPortal is a service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
+[ReportPortal]([url](http://reportportal.io/)) is an open-source, service-oriented, web-based platform that serves as the single entry point for your entire automated testing process. It provides enhanced **machine learning analytics**, advanced visualization, and collaborative capabilities to your testing landscape. By processing large volumes of real-time test results from various platforms and types, ReportPortal unifies your test results, helping teams identify and focus on critical issues to improve efficiency and elevate the overall quality of the product, accompanied by Quality Gates for the automated decision returned into the CI/CD pipelines.
 
-ReportPortal is a great addition to Continuous Integration and Continuous Testing process.
+## What Can ReportPortal Do?
 
-What ReportPortal can do?
+Leveraging the power of AI and machine learning, ReportPortal offers a suite of unique capabilities:
+- **Single Entry Point**: Streamline your testing process by having all your testing results, regardless of the platform or type, fed into a centralized system.
+- **Unification of Test Results**: Collect, analyze, and present test results from various platforms and types for a comprehensive view of your testing process.
+- **Failure Categorization (Triaging)**: Facilitate efficient triaging of failed test results, **using AI** to categorize failures and highlight the most critical issues.
+- **Advanced Analysis**: Use **Machine Learning algorithms** to analyze test reports and failures, identify patterns, and predict potential issues. This reduces the team's effort in handling test results, allowing them to concentrate solely on new failures or enhancing test coverage.
+- **Quality Gates**: Define and implement specific criteria that need to be satisfied before moving to the next development phase. Automate GO/NO-GO decisions based on testing results and integrate a feedback loop into the CI/CD pipelines.
+- **Dashboarding**: Harness data visualization to track and understand trends, facilitating more informed decision-making.
+- **Real-Time Reporting**: Monitor test execution in real-time, with live metrics, logs, and launch statistics available at a glance, so you can save a time on early reaction.
+- **Historical Data Analysis**: Compare test results over time to identify trends and patterns.
+- **Collaboration Tools**: Easily share insights, test results, and observations with your team, fostering a collaborative approach to troubleshooting and issue resolution.
+- **Integration**: Seamless compatibility with popular testing frameworks ([JUnit, PyTest, TestNG, etc.]([url](https://github.com/reportportal?q=agent-&type=all&language=&sort=))) and CI/CD tools (Jenkins, Bamboo, etc.).
 
-* Mainstream platforms integration ReportPortal seamlessly integrates with mainstream platforms such as Jenkins, Jira, BDD process, majority of Functional and Unit testing frameworks.
-* Real-time integration Real-time integration provides businesses the ability to manage and track execution status directly from the ReportPortal.
-* Test case execution results structure Test case execution results are stored following the same structure you have in your reporting suites and test plan. The test cases are shown together with all related data in one place, right where you need it: logs, screenshots, binary data. The execution pipeline of certain test cases are also available for you, so one can see previous execution results in one click.
-* Collaborative analysis ReportPortal also gives you the ability to collaboratively analyze the test automation results. Particular test cases can be associated with a product bug, an automation issue, a system issue or can be submitted as an issue ticket directly from the execution result.
-* Historical data of test execution ReportPortal provides enhanced capabilities along with auto-results analysis by leveraging historical data of test execution.
-* Automatic Analysis With each execution, ReportPortal automatically figures out the root cause of a fail. As a result of this analysis, ReportPortal is marking a test result with a flag. Engineers will be alerted about this issue to provide further analysis: if it has been resolved already or which test results require actual human analysis.
-
-What technologies are used?
-
-* Considering a high load rate and performance requirements, we use cutting edge technologies such as:
-* PostgreSQL - The World's Most Advanced Open Source Relational Database.
-* REST Web Service - lightweight requests, industry standard.
-* Mobile responsive UI - check it at any mobile device with the default browser.
 
 <p align="center">
   <a href="https://reportportal.io/installation" target="blank"><img src="https://raw.githubusercontent.com/reportportal/.github/profile/profile/assets/install_banner.png" alt="Install ReportPortal"></a>
