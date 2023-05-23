@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://reportportal.io" target="blank"><img src="https://raw.githubusercontent.com/reportportal/.github/profile/profile/assets/github_header.jpg" alt="ReportPortal"></a>
+  <a href="https://reportportal.io" target="blank"><img src="https://raw.githubusercontent.com/reportportal/.github/main/profile/assets/github_header.jpg" alt="ReportPortal"></a>
 </p>
 
 ---
@@ -34,7 +34,7 @@ Leveraging the power of AI and machine learning, ReportPortal offers a suite of 
 
 
 <p align="center">
-  <a href="https://reportportal.io/installation" target="blank"><img src="https://raw.githubusercontent.com/reportportal/.github/profile/profile/assets/install_banner.png" alt="Install ReportPortal"></a>
+  <a href="https://reportportal.io/installation" target="blank"><img src="https://raw.githubusercontent.com/reportportal/.github/main/profile/assets/install_banner.png" alt="Install ReportPortal"></a>
 </p>
 
 ## Repositories structure
