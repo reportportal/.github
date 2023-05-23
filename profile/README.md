@@ -60,8 +60,8 @@ Available plugins developed by ReportPortal team:
 * [`plugin-bts-jira`](https://github.com/reportportal/plugin-bts-jira) JIRA Plugin. Interaction with JIRA.
 * [`plugin-bts-rally`](https://github.com/reportportal/plugin-bts-rally) Rally Plugin. Interaction with Rally.
 * [`plugin-saucelabs`](https://github.com/reportportal/plugin-saucelabs) Sauce Labs Plugin. Interaction with Sauce Labs.
-* [`plugin-bts-jira`](https://github.com/reportportal/plugin-bts-jira) Jira bug tracking system integration for ReportPortal.
-* [`plugin-bts-rally`](https://github.com/reportportal/plugin-bts-rally)  Rally bug tracking system integration for ReportPortal.
+* [`plugin-bts-jira-cloud`](https://github.com/reportportal/plugin-bts-jira-cloud) Plugin to integrate JIRA Cloud with ReportPortal.
+* [`plugin-bts-azure`](https://github.com/reportportal/plugin-bts-azure) AzureDevOps bug tracking system integration for ReportPortal.
 
 **Client side** adapters related repositories:
 
