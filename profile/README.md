@@ -46,7 +46,7 @@ Application Core based on micro-services architecture and includes next mandator
 
 ReportPortal **server side** consists of the following services:
 
-* [`service-authorization`](https://github.com/reportportal/service-authorization) Authorization Service. In charge of access tokens distribution
+* [`service-authorization`](https://github.com/reportportal/service-authorization) Authorization Service. In charge of access tokens distribution.
 * [`service-api`](https://github.com/reportportal/service-api) API Service. Application Backend.
 * [`service-ui`](https://github.com/reportportal/service-ui) UI Service. Application Frontend.
 * [`service-index`](https://github.com/reportportal/service-index) Index Service. Info and health checks per service.
