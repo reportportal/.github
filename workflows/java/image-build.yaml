@@ -1,4 +1,4 @@
-name: Deploy RC Image to Amazon ECR
+name: Deploy Image to Amazon ECR
 
 on:
   push:
