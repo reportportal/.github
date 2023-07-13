@@ -3,7 +3,7 @@ name: Deploy RC Image to Amazon ECR
 on:
   push:
     branches:
-      - 'develop'
+      - 'test-image-build'
   # pull_request_review:
   #   types: [submitted]
   #   branches:
