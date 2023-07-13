@@ -2,13 +2,7 @@ name: Deploy RC Image to Amazon ECR
 
 on:
   push:
-    branches:
-      - 'test-image-build'
-  # pull_request_review:
-  #   types: [submitted]
-  #   branches:
-  #     - 'develop'
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, synchronize]
     branches:
       - 'develop'
@@ -56,5 +50,5 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Create annotation
+      - name: Generate job summary
         run: echo 'Docker image URL' >>  ${{ steps.vars.outputs.image }}
