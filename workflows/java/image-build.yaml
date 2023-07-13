@@ -18,7 +18,6 @@ env:
   ECR_REPOSITORY: ${{vars.ECR_REPOSITORY}} # set this to your Amazon ECR repository name
   PLATFORM: linux/amd64
   
-
 jobs:
  deploy:
     name: Deploy
