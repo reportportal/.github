@@ -41,10 +41,9 @@ jobs:
       - name: Build, tag, and push docker image to Amazon ECR
         id: push-image
         env:
-          #  ${{ github.head_ref }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           GIT_HASH: $(git rev-parse --short ${{ github.sha }})
-          IMAGE_TAG: ${{ github.ref_name }}-${{ steps.vars.outputs.sha_short }} 
+          IMAGE_TAG: ${{ github.head_ref }}-${{ steps.vars.outputs.sha_short }} 
         run: |
           docker buildx build --build-arg APP_VERSION=$IMAGE_TAG --platform $PLATFORM -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
