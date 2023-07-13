@@ -4,6 +4,7 @@ on:
   push:
   pull_request_target:
     types: [opened, reopened, synchronize]
+    # types: [submitted]
     branches:
       - 'develop'
 
