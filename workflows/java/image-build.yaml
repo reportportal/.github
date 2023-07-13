@@ -44,7 +44,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           # IMAGE_TAG: ${{ github.event.pull_request.head.ref }}
-          IMAGE_TAG: ${{ github.head_ref }}
+          IMAGE_TAG: ${{ github.head_ref }}-${{ github.sha }}
         run: |
           docker buildx build --build-arg APP_VERSION=$IMAGE_TAG --platform $PLATFORM -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
