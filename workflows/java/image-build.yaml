@@ -45,6 +45,7 @@ jobs:
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Build, tag, and push docker image to Amazon ECR
+        id: push-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           # IMAGE_TAG: ${{ github.event.pull_request.head.ref }}
@@ -54,3 +55,6 @@ jobs:
           docker buildx build --build-arg APP_VERSION=$IMAGE_TAG --platform $PLATFORM -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Create annotation
+        run: echo 'Docker image url ${{ steps.vars.outputs.image }}' >> $GITHUB_STEP_SUMMARY
