@@ -1,4 +1,4 @@
-name: Build and deploy image
+name: Deploy image to Amazon ECR
 
 on:
   push:
