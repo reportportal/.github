@@ -1,7 +1,7 @@
 name: Java Workflow
 
 on:
-  push:
+  pull_request:
     branches:
       - main
       - master
@@ -10,7 +10,8 @@ on:
       - readme.md
       - README.md
       - CHANGELOG.md
-  pull_request:
+      - '.github/**'
+      - gradle.properties
     types: [opened, synchronize, reopened]
 
 jobs:
