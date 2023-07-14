@@ -1,4 +1,4 @@
-name: Deploy image to Amazon ECR
+name: Build Docker image
 
 on:
   push:
@@ -46,8 +46,8 @@ jobs:
           name: docker-image
           path: /tmp/docker-image.tar
   
-  deploy_to_ecr:
-    name: Deploy to Amazon ECR
+  push_to_ecr:
+    name: Push to Amazon ECR
     needs: build
     runs-on: ubuntu-latest
     environment: development
@@ -79,17 +79,16 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Set short git commit SHA
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Tag and push docker image to Amazon ECR
         id: push-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          GIT_HASH: $(git rev-parse --short ${{ github.sha }})
-          IMAGE_TAG: ${{ github.head_ref }}-${{ steps.vars.outputs.sha_short }} 
+          IMAGE_TAG: ${{ github.head_ref }}-${{ github.run_number	}} 
         run: |
           docker tag ${{ github.repository }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "Docker image name in Amazon ECR: $ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
+          echo |
+            ":rocket: Docker image in Amazon ECR: [$ECR_REPOSITORY](https://$AWS_REGION.console.aws.amazon.com/ecr/repositories/private/334301710522/$ECR_REPOSITORY):$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
+            ":hash: The commit SHA that triggered the workflow: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+
