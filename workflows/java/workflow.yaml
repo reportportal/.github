@@ -14,6 +14,34 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  build-gradle:
+    name: Build check with Gradle
+    runs-on: ubuntu-latest 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Setup git credentials
+        uses: oleksiyrudenko/gha-git-credentials@v2
+        with:
+          name: 'reportportal.io'
+          email: 'support@reportportal.io'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build with Gradle
+        id: build
+        run: |
+          ./gradlew build
+
   reviewdog:
     if: contains(fromJSON('["reportportal/service-api", "reportportal/commons-dao", "reportportal/service-authorization", "reportportal/service-jobs", "reportportal/commons-model"]'), github.repository)
     runs-on: ubuntu-latest
@@ -28,10 +56,11 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: 'github-pr-review'
+  
   sonarcloud:
     if: contains(fromJSON('[""]'), github.repository)
     runs-on: ubuntu-latest
-    name: SonarCloud
+    name: SonarCloud Scan
     steps:
     - name: Checkout
       uses: actions/checkout@v3
