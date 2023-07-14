@@ -83,12 +83,15 @@ jobs:
         id: push-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.head_ref }}-${{ github.run_number	}} 
+          IMAGE_TAG: ${{ github.head_ref }}-${{ github.run_number	}}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           docker tag ${{ github.repository }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo |
             ":rocket: Docker image in Amazon ECR: [$ECR_REPOSITORY](https://$AWS_REGION.console.aws.amazon.com/ecr/repositories/private/334301710522/$ECR_REPOSITORY):$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
-            ":hash: The commit SHA that triggered the workflow: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+            ":hash: The commit SHA that triggered the workflow: [$GITHUB_SHA](https://github.com/$GITHUB_SHA/commit/$GITHUB_SHA)" >> $GITHUB_STEP_SUMMARY
+
+            
 
 
