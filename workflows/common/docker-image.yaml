@@ -37,14 +37,14 @@ jobs:
           context: .
           build-args: APP_VERSION=$VERSION
           platforms: ${{ env.PLATFORMS }}
-          tags: image:latest
-          outputs: type=docker,dest=/tmp/image.tar
+          tags: ${{ github.repository }}:latest
+          outputs: type=docker,dest=/tmp/docker-image.tar
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: image
-          path: /tmp/image.tar
+          name: docker-image
+          path: /tmp/docker-image.tar
   
   deploy_to_ecr:
     name: Deploy to Amazon ECR
@@ -59,12 +59,12 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: image
+          name: docker-image
           path: /tmp
 
       - name: Load image
         run: |
-          docker load --input /tmp/image.tar
+          docker load --input /tmp/docker-image.tar
           docker image ls -a
 
       - name: Configure AWS credentials
@@ -90,6 +90,6 @@ jobs:
           GIT_HASH: $(git rev-parse --short ${{ github.sha }})
           IMAGE_TAG: ${{ github.head_ref }}-${{ steps.vars.outputs.sha_short }} 
         run: |
-          docker tag image $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag ${{ github.repository }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "Docker image name in Amazon ECR: $ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
