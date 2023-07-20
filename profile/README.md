@@ -39,8 +39,9 @@ Leveraging the power of AI and machine learning, ReportPortal offers a suite of 
 
 ## Repositories structure
 
-Application Core based on micro-services architecture.
-Application Core based on micro-services architecture and includes next mandatory services:
+[Report Portal starts here](https://github.com/reportportal/reportportal)
+
+Application Core is based on micro-services architecture and includes the next mandatory services:
 
 ![structure](https://raw.githubusercontent.com/reportportal/reportportal/master/public/rp_repo_structure.png)
 
