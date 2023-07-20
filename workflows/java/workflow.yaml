@@ -1,7 +1,7 @@
 name: Java Workflow
 
 on:
-  push:
+  pull_request:
     branches:
       - main
       - master
@@ -10,10 +10,39 @@ on:
       - readme.md
       - README.md
       - CHANGELOG.md
-  pull_request:
+      - '.github/**'
+      - gradle.properties
     types: [opened, synchronize, reopened]
 
 jobs:
+  build-gradle:
+    name: Build check
+    runs-on: ubuntu-latest 
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '11'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Setup git credentials
+      uses: oleksiyrudenko/gha-git-credentials@v2
+      with:
+        name: 'reportportal.io'
+        email: 'support@reportportal.io'
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build with Gradle
+      id: build
+      run: |
+        ./gradlew build
+
   reviewdog:
     if: contains(fromJSON('["reportportal/service-api", "reportportal/commons-dao", "reportportal/service-authorization", "reportportal/service-jobs", "reportportal/commons-model"]'), github.repository)
     runs-on: ubuntu-latest
@@ -23,38 +52,45 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    
     - name: Run checkstyle
       uses: nikitasavinov/checkstyle-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: 'github-pr-review'
+  
   sonarcloud:
     if: contains(fromJSON('[""]'), github.repository)
     runs-on: ubuntu-latest
-    name: SonarCloud
+    name: SonarCloud Scan
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    
     - name: Set up JDK 11
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    
     - name: Cache SonarCloud packages
       uses: actions/cache@v1
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
+    
     - name: Cache Gradle packages
       uses: actions/cache@v1
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-gradle
+    
     - name: Report test coverage
       run: ./gradlew test jacocoTestReport
+    
     - name: Build and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
