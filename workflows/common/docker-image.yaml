@@ -3,8 +3,7 @@ name: Build Docker image
 on:
   push:
   pull_request:
-    types: [opened, reopened, synchronize]
-    # types: [submitted]
+    types: [submitted]
     branches:
       - 'develop'
 
