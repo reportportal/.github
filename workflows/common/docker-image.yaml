@@ -28,13 +28,19 @@ jobs:
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
       - name: Build and export
         uses: docker/build-push-action@v4
         env:
           VERSION: ${{ github.head_ref }}-${{ steps.vars.outputs.sha_short }}
+          BRANCH: ${{ github.head_ref }}
+          DATE: ${{ steps.date.outputs.date }}
         with:
           context: .
-          build-args: APP_VERSION=${{ env.VERSION }}
+          build-args: APP_VERSION=${{ env.VERSION }}, BUILD_BRANCH=${{ env.BRANCH }}, BUILD_DATE=${{ env.DATE }}
           platforms: ${{ env.PLATFORMS }}
           tags: ${{ github.repository }}:latest
           outputs: type=docker,dest=/tmp/docker-image.tar
