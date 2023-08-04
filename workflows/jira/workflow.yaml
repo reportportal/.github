@@ -3,16 +3,10 @@ name: Update Jira Fix Version
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    branches:
-      - 'master'
-      - 'main'
-#     paths-ignore:
-#       - 'readme.md'
-#       - 'README.md'
-#       - 'LICENSE'
 
 jobs:
   sync-version-with-jira-issues:
+    if: github.base_ref == 'master' || github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Pull Request Checkout
