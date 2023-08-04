@@ -44,7 +44,6 @@ jobs:
         ./gradlew build
 
   reviewdog:
-    if: contains(fromJSON('["reportportal/service-api", "reportportal/commons-dao", "reportportal/service-authorization", "reportportal/service-jobs", "reportportal/commons-model"]'), github.repository)
     runs-on: ubuntu-latest
     name: Java Checkstyle
     steps:
