@@ -2,16 +2,6 @@ name: Java Workflow
 
 on:
   pull_request:
-    branches:
-      - main
-      - master
-      - develop
-    paths-ignore:
-      - readme.md
-      - README.md
-      - CHANGELOG.md
-      - '.github/**'
-      - gradle.properties
     types: [opened, synchronize, reopened]
 
 jobs:
