@@ -4,8 +4,6 @@ on:
   push:
   pull_request:
     types: [submitted]
-    branches:
-      - 'develop'
 
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}         # set this to your preferred AWS region, e.g. us-west-1
@@ -85,11 +83,16 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Create image tag
+        id: image-tag
+        run: |
+          echo "::set-output name=tag::$(echo ${{ github.head_ref }}-${{ github.run_number }} | tr '/' '-')" >> $GITHUB_OUTPUT
+      
       - name: Tag and push docker image to Amazon ECR
         id: push-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.head_ref }}-${{ github.run_number }}
+          IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
           # GITHUB_SHA: ${{ github.sha }}
         run: |
           docker tag ${{ github.repository }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
