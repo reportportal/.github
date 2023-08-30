@@ -55,15 +55,8 @@ jobs:
           context: .
           build-args: APP_VERSION=${{ env.VERSION }},BUILD_BRANCH=${{ env.BRANCH }},BUILD_DATE=${{ env.DATE }}
           platforms: ${{ env.PLATFORMS }}
-          tags: {{ env.ECR_REGISTRY }}/{{ env.ECR_REPOSITORY }}:{{ env.IMAGE_TAG }}
-          outputs: type=registry
-        run: |
-          echo "## General information about the build:" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- :gift: Docker image in Amazon ECR: $ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
-          echo "- :octocat: The commit SHA from which the build was performed: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)" >> $GITHUB_STEP_SUMMARY
-        
-  
+          tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          outputs: type=registry       
   # push_to_ecr:
   #   name: Push to Amazon ECR
   #   needs: build
