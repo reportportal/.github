@@ -1,4 +1,4 @@
-name: Build Docker image
+name: Build develop Docker image
 
 on:
   pull_request:
@@ -10,8 +10,8 @@ env:
   PLATFORMS: ${{ vars.BUILD_PLATFORMS }}
 
 jobs:
-  build:
-    name: Build
+  build-and-export:
+    name: Build and export to AWS ECR
     runs-on: ubuntu-latest
     environment: development
     if: github.base_ref == 'develop'
