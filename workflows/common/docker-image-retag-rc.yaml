@@ -56,7 +56,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ steps.vars.outputs.tag }}
         run: |
-          docker buildx imagetools create $ECR_REGISTRY/$ECR_REPOSITORY:latest --tag reportportal/$ECR_REPOSITORY:$IMAGE_TAG --tag reportportal/$ECR_REPOSITORY:latest
+          docker buildx imagetools create $ECR_REGISTRY/$ECR_REPOSITORY:latest --tag $DOCKERHUB_REGISTRY/$DOCKERHUB_REPOSITORY:$IMAGE_TAG --tag $DOCKERHUB_REGISTRY/$DOCKERHUB_REPOSITORY:latest
       
       - name: Summarize
         env:
@@ -65,5 +65,5 @@ jobs:
         run: |
           echo "## General information about the build:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- :whale: Docker image: reportportal/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
+          echo "- :whale: Docker image: $DOCKERHUB_REGISTRY/$DOCKERHUB_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
           echo "- :octocat: The commit SHA from which the build was performed: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)" >> $GITHUB_STEP_SUMMARY
