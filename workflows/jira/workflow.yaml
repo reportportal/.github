@@ -6,7 +6,7 @@ on:
 
 jobs:
   sync-version-with-jira-issues:
-    if: startsWith(github.head_ref, 'rc/')
+    if: startsWith(github.head_ref, 'rc/') && github.base_ref == 'master' && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Pull Request Checkout
