@@ -14,7 +14,7 @@ jobs:
     name: Build and export to AWS ECR
     runs-on: ubuntu-latest
     environment: development
-    if: github.base_ref == 'develop'
+    if: github.base_ref == 'develop' && !startsWith(github.head_ref, 'rc/') && !startsWith(github.head_ref, 'master') && !startsWith(github.head_ref, 'main')
     steps:
       - name: Checkout
         uses: actions/checkout@v3
