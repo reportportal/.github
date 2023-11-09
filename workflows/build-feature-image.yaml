@@ -1,17 +1,17 @@
-name: Reusable build feature image
+name: Build feature image and push to AWS ECR
 
 on:
   workflow_call:
     inputs:
-      AWS_REGION:
+      aws-region:
         description: 'AWS Region'
         required: true
         type: string
-      ECR_REPOSITORY:
+      ecr-repository:
         description: 'ECR Repository'
         required: true
         type: string
-      BUILD_PLATFORMS:
+      build-platforms:
         description: 'Build platforms'
         required: false
         type: string
@@ -30,9 +30,9 @@ on:
         required: true
 
 env:
-  AWS_REGION: ${{ inputs.AWS_REGION }}         # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: ${{ inputs.ECR_REPOSITORY }} # set this to your Amazon ECR repository name
-  PLATFORMS: ${{ inputs.BUILD_PLATFORMS }}      # set target build platforms. By default linux/amd64
+  AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: ${{ inputs.ecr-repository }} # set this to your Amazon ECR repository name
+  PLATFORMS: ${{ inputs.build-platforms }}      # set target build platforms. By default linux/amd64
 
 jobs:
   build-and-export:
