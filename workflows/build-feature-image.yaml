@@ -6,18 +6,26 @@ on:
       AWS_REGION:
         description: 'AWS Region'
         required: true
+        type: string
       ECR_REPOSITORY:
         description: 'ECR Repository'
         required: true
+        type: string
       BUILD_PLATFORMS:
         description: 'Build platforms'
         required: false
+        type: string
         default: 'linux/amd64'
+      environment:
+        description: 'Environment'
+        required: false
+        type: string
+        default: 'development'
     secrets:
       AWS_ACCESS_KEY_ID:
         description: 'AWS Access Key ID'
         required: true
-        AWS_SECRET_ACCESS_KEY:
+      AWS_SECRET_ACCESS_KEY:
         description: 'AWS Secret Access Key'
         required: true
 
@@ -30,7 +38,7 @@ jobs:
   build-and-export:
     name: Build and export to AWS ECR
     runs-on: ubuntu-latest
-    environment: development
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
