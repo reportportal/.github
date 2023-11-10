@@ -12,17 +12,12 @@ on:
         description: 'ECR Repository'
         required: false
         type: string
-        default: ${{ github.repository }}
+        default: ${{ github.event.repository.name }}
       build-platforms:
         description: 'Build platforms'
         required: false
         type: string
         default: 'linux/amd64'
-      secrets-environment:    
-        description: 'Environment for secrets'
-        required: false
-        type: string
-        default: 'development'
     secrets:
       AWS_ACCESS_KEY_ID:
         description: 'AWS Access Key ID'
@@ -40,8 +35,6 @@ jobs:
   build-and-export:
     name: Build and export to AWS ECR
     runs-on: ubuntu-latest
-    # environment is used only for retrieve secrets
-    environment: ${{ inputs.secrets-environment }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
