@@ -18,6 +18,26 @@ on:
         required: false
         type: string
         default: 'linux/amd64'
+      image-tag:
+        description: 'Image tag'
+        required: false
+        type: string
+        default: 'run-number-${{ github.run_number }}'
+      version:
+        description: 'Application version'
+        required: false
+        type: string
+        default: ${{ github.head_ref }}-${{ github.sha }}
+      branch:
+        description: 'Branch'
+        required: false
+        type: string
+        default: ${{ github.head_ref }}
+      date:
+        description: 'Build date'
+        required: false
+        type: string
+        default: ""
     secrets:
       AWS_ACCESS_KEY_ID:
         description: 'AWS Access Key ID'
@@ -52,13 +72,6 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         with:
           mask-password: 'true'
-
-      - name: Create variables
-        id: vars
-        run: |
-          echo "tag=$(echo ${{ github.head_ref }}-${{ github.run_number }} | tr '/' '-')" >> $GITHUB_OUTPUT
-          echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -69,11 +82,11 @@ jobs:
       - name: Build
         uses: docker/build-push-action@v4
         env:
-          VERSION: ${{ github.head_ref }}-${{ steps.vars.outputs.sha_short }}
-          BRANCH: ${{ github.head_ref }}
-          DATE: ${{ steps.vars.outputs.date }}
-          IMAGE_TAG: ${{ steps.vars.outputs.tag }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ inputs.image-tag }}
+          VERSION: ${{ inputs.version }}
+          BRANCH: ${{ inputs.branch }}
+          DATE: ${{ inputs.date }}
         with:
           context: .
           push: true
@@ -87,7 +100,7 @@ jobs:
       - name: Summarize
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ steps.vars.outputs.tag }}
+          IMAGE_TAG: ${{ inputs.image-tag }}
         run: |
           echo "## General information about the build:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
