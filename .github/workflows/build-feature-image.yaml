@@ -5,12 +5,14 @@ on:
     inputs:
       aws-region:
         description: 'AWS Region'
-        required: true
+        required: false
         type: string
+        default: 'us-east-1'
       ecr-repository:
         description: 'ECR Repository'
-        required: true
+        required: false
         type: string
+        default: ${{ github.repository }}
       build-platforms:
         description: 'Build platforms'
         required: false
@@ -32,13 +34,14 @@ on:
 env:
   AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ${{ inputs.ecr-repository }} # set this to your Amazon ECR repository name
-  PLATFORMS: ${{ inputs.build-platforms }}      # set target build platforms. By default linux/amd64
+  PLATFORMS: ${{ inputs.build-platforms }}     # set target build platforms. By default linux/amd64
 
 jobs:
   build-and-export:
     name: Build and export to AWS ECR
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    # environment is used only for retrieve secrets
+    environment: ${{ inputs.environment }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
