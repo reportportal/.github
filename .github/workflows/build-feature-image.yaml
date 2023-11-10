@@ -18,8 +18,8 @@ on:
         required: false
         type: string
         default: 'linux/amd64'
-      environment:
-        description: 'Environment'
+      secrets-environment:    
+        description: 'Environment for secrets'
         required: false
         type: string
         default: 'development'
@@ -41,7 +41,7 @@ jobs:
     name: Build and export to AWS ECR
     runs-on: ubuntu-latest
     # environment is used only for retrieve secrets
-    environment: ${{ inputs.environment }} 
+    environment: ${{ inputs.secrets-environment }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
