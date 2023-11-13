@@ -22,7 +22,7 @@ on:
         description: 'Image tag'
         required: false
         type: string
-        default: ${{ github.workflow }}-${{ github.run_number }}'
+        default: 'run-number-${{ github.run_number }}'
       version:
         description: 'Application version'
         required: false
