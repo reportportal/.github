@@ -32,7 +32,7 @@ on:
         description: 'Application version'
         required: false
         type: string
-        default: ${{ github.head_ref }}-${{ github.sha }}
+        default: ${{ github.head_ref }}
       branch:
         description: 'Build branch'
         required: false
@@ -42,7 +42,12 @@ on:
         description: 'Build date'
         required: false
         type: string
-        default: ""
+        default: ''
+      release-mode:
+        description: 'Release mode for application build'
+        required: false
+        type: boolean
+        default: false
     secrets:
       AWS_ACCESS_KEY_ID:
         description: 'AWS Access Key ID'
@@ -50,11 +55,22 @@ on:
       AWS_SECRET_ACCESS_KEY:
         description: 'AWS Secret Access Key'
         required: true
+      GITHUB_USER:
+        description: 'GitHub user'
+        required: false
+      GITHUB_TOKEN:
+        description: 'GitHub token'
+        required: false
 
 env:
   AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ${{ inputs.ecr-repository }} # set this to your Amazon ECR repository name
   PLATFORMS: ${{ inputs.build-platforms }}     # set target build platforms. By default linux/amd64
+  IMAGE_TAG: ${{ inputs.image-tag }}
+  ADDITIONAL_TAG: ${{ inputs.additional-tag }}
+  VERSION: ${{ inputs.version }}
+  BRANCH: ${{ inputs.branch }}
+  DATE: ${{ inputs.date }}
 
 jobs:
   build-and-export:
@@ -88,11 +104,6 @@ jobs:
         uses: docker/build-push-action@v4
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ inputs.image-tag }}
-          ADDITIONAL_TAG: ${{ inputs.additional-tag }}
-          VERSION: ${{ inputs.version }}
-          BRANCH: ${{ inputs.branch }}
-          DATE: ${{ inputs.date }}
         with:
           context: .
           push: true
