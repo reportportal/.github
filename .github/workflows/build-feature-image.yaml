@@ -12,7 +12,7 @@ on:
         description: 'ECR Repository'
         required: false
         type: string
-        default: '${{ github.event.repository.name }}'
+        default: ${{ github.event.repository.name }}
       build-platforms:
         description: 'Build platforms'
         required: false
@@ -32,17 +32,17 @@ on:
         description: 'Application version'
         required: false
         type: string
-        default: '${{ github.ref_name }}-${{ github.run_number }}'
+        default: ${{ github.head_ref }}-${{ github.sha }}
       branch:
         description: 'Build branch'
         required: false
         type: string
-        default: '${{ github.ref_name }}'
+        default: ${{ github.head_ref }}
       date:
         description: 'Build date'
         required: false
         type: string
-        default: ''
+        default: ""
     secrets:
       AWS_ACCESS_KEY_ID:
         description: 'AWS Access Key ID'
@@ -101,7 +101,9 @@ jobs:
             BUILD_BRANCH=${{ env.BRANCH }}
             BUILD_DATE=${{ env.DATE }}
           platforms: ${{ env.PLATFORMS }}
-          tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}${{ env.ADDITIONAL_TAG != '' && format(',{0}/{1}:{2}', env.ECR_REGISTRY, env.ECR_REPOSITORY, env.ADDITIONAL_TAG) || '' }}
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ env.ADDITIONAL_TAG != '' && format('{0}/{1}:{2}', env.ECR_REGISTRY, env.ECR_REPOSITORY, env.ADDITIONAL_TAG) || '' }}
       
       - name: Summarize
         env:
