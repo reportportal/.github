@@ -27,12 +27,12 @@ on:
         description: 'Application version'
         required: false
         type: string
-        default: ${{ github.head_ref }}-${{ github.sha }}
+        default: ${{ github.ref_name }}-${{ github.sha }}
       branch:
         description: 'Branch'
         required: false
         type: string
-        default: ${{ github.head_ref }}
+        default: ${{ github.ref_name }}
       date:
         description: 'Build date'
         required: false
