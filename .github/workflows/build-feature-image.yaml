@@ -12,7 +12,7 @@ on:
         description: 'ECR Repository'
         required: false
         type: string
-        default: ${{ github.event.repository.name }}
+        default: '${{ github.event.repository.name }}'
       build-platforms:
         description: 'Build platforms'
         required: false
@@ -32,17 +32,17 @@ on:
         description: 'Application version'
         required: false
         type: string
-        default: ${{ github.head_ref }}-${{ github.sha }}
+        default: '${{ github.ref_name }}-${{ github.run_number }}'
       branch:
         description: 'Build branch'
         required: false
         type: string
-        default: ${{ github.head_ref }}
+        default: '${{ github.ref_name }}'
       date:
         description: 'Build date'
         required: false
         type: string
-        default: ""
+        default: ''
     secrets:
       AWS_ACCESS_KEY_ID:
         description: 'AWS Access Key ID'
