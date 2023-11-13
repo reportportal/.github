@@ -55,10 +55,10 @@ on:
       AWS_SECRET_ACCESS_KEY:
         description: 'AWS Secret Access Key'
         required: true
-      GITHUB_USER:
+      GH_USER:
         description: 'GitHub user'
         required: false
-      GITHUB_TOKEN:
+      GH_TOKEN:
         description: 'GitHub token'
         required: false
 
