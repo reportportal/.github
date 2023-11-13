@@ -71,7 +71,7 @@ env:
   VERSION: ${{ inputs.version }}
   BRANCH: ${{ inputs.branch }}
   DATE: ${{ inputs.date }}
-
+  RELEASE_MODE: ${{ inputs.release-mode }}
 jobs:
   build-and-export:
     name: Build and export to AWS ECR
@@ -111,6 +111,9 @@ jobs:
             APP_VERSION=${{ env.VERSION }}
             BUILD_BRANCH=${{ env.BRANCH }}
             BUILD_DATE=${{ env.DATE }}
+            RELEASE_MODE=${{ env.RELEASE_MODE }}
+            GITHUB_USER=${{ secrets.GH_USER }}
+            GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
           platforms: ${{ env.PLATFORMS }}
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
