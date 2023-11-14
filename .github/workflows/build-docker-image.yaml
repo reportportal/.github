@@ -1,0 +1,130 @@
+name: Build Docker image and push to AWS ECR
+
+on:
+  workflow_call:
+    inputs:
+      aws-region:
+        description: 'AWS Region'
+        required: false
+        type: string
+        default: 'us-east-1'
+      ecr-repository:
+        description: 'ECR Repository'
+        required: false
+        type: string
+        default: ${{ github.event.repository.name }}
+      build-platforms:
+        description: 'Build platforms'
+        required: false
+        type: string
+        default: 'linux/amd64'
+      image-tag:
+        description: 'Image tag'
+        required: false
+        type: string
+        default: 'run-number-${{ github.run_number }}'
+      additional-tag:
+        description: 'Additional image tag'
+        required: false
+        type: string
+        default: ''
+      version:
+        description: 'Application version'
+        required: false
+        type: string
+        default: ${{ github.head_ref }}
+      branch:
+        description: 'Build branch'
+        required: false
+        type: string
+        default: ${{ github.head_ref }}
+      date:
+        description: 'Build date'
+        required: false
+        type: string
+        default: ''
+      release-mode:
+        description: 'Release mode for application build'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: 'AWS Access Key ID'
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: 'AWS Secret Access Key'
+        required: true
+      GH_USER:
+        description: 'GitHub user'
+        required: false
+      GH_TOKEN:
+        description: 'GitHub token'
+        required: false
+
+env:
+  AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: ${{ inputs.ecr-repository }} # set this to your Amazon ECR repository name
+  PLATFORMS: ${{ inputs.build-platforms }}     # set target build platforms. By default linux/amd64
+  IMAGE_TAG: ${{ inputs.image-tag }}
+  ADDITIONAL_TAG: ${{ inputs.additional-tag }}
+  VERSION: ${{ inputs.version }}
+  BRANCH: ${{ inputs.branch }}
+  DATE: ${{ inputs.date }}
+  RELEASE_MODE: ${{ inputs.release-mode }}
+jobs:
+  build-and-export:
+    name: Build and export to AWS ECR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          # role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build
+        uses: docker/build-push-action@v4
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        with:
+          context: .
+          push: true
+          build-args: |
+            APP_VERSION=${{ env.VERSION }}
+            BUILD_BRANCH=${{ env.BRANCH }}
+            BUILD_DATE=${{ env.DATE }}
+            RELEASE_MODE=${{ env.RELEASE_MODE }}
+            GITHUB_USER=${{ secrets.GH_USER }}
+            GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
+          platforms: ${{ env.PLATFORMS }}
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ env.ADDITIONAL_TAG != '' && format('{0}/{1}:{2}', env.ECR_REGISTRY, env.ECR_REPOSITORY, env.ADDITIONAL_TAG) || '' }}
+      
+      - name: Summarize
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ inputs.image-tag }}
+        run: |
+          echo "## General information about the build:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- :gift: Docker image in Amazon ECR: $ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
+          echo "- :octocat: The commit SHA from which the build was performed: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)" >> $GITHUB_STEP_SUMMARY
