@@ -37,7 +37,7 @@ on:
         description: 'Build branch'
         required: false
         type: string
-        default: ${{ github.ref_name }}
+        default: ${{ github.ref }}
       date:
         description: 'Build date'
         required: false
