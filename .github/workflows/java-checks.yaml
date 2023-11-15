@@ -1,8 +1,23 @@
-name: Java Workflow
+name: Java Checks
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_call:
+    inputs:
+      distribution:
+        description: 'The distribution of Java to use'
+        type: string
+        required: true
+        default: 'adopt'
+      java-version:
+        description: 'The version of Java to use'
+        type: string
+        required: true
+        default: '11'
+      checkstyle-reporter:
+        description: 'The reporter to use for checkstyle'
+        type: string
+        required: true
+        default: 'github-pr-review'
 
 jobs:
   build-gradle:
@@ -12,11 +27,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up JDK 11
+    - name: Set up JDK
       uses: actions/setup-java@v2
       with:
-        distribution: 'adopt'
-        java-version: '11'
+        distribution: ${{ inputs.distribution }}
+        java-version: ${{ inputs.java-version }}
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -32,7 +47,7 @@ jobs:
       id: build
       run: |
         ./gradlew build
-
+  
   reviewdog:
     runs-on: ubuntu-latest
     name: Java Checkstyle
@@ -46,7 +61,7 @@ jobs:
       uses: nikitasavinov/checkstyle-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        reporter: 'github-pr-review'
+        reporter: ${{ inputs.checkstyle-reporter }}
   
   # sonarcloud:
   #   runs-on: ubuntu-latest
