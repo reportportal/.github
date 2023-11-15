@@ -6,17 +6,17 @@ on:
       distribution:
         description: 'The distribution of Java to use'
         type: string
-        required: true
+        required: false
         default: 'adopt'
       java-version:
         description: 'The version of Java to use'
         type: string
-        required: true
+        required: false
         default: '11'
       checkstyle-reporter:
         description: 'The reporter to use for checkstyle'
         type: string
-        required: true
+        required: false
         default: 'github-pr-review'
 
 jobs:
