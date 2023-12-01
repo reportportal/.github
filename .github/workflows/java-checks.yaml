@@ -12,7 +12,7 @@ on:
         description: 'The version of Java to use'
         type: string
         required: false
-        default: '11'
+        default: '21'
       checkstyle-reporter:
         description: 'The reporter to use for checkstyle'
         type: string
