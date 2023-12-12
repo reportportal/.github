@@ -73,6 +73,7 @@ env:
   PLATFORMS: ${{ inputs.build-platforms }}     # set target build platforms. By default linux/amd64
   IMAGE_TAG: ${{ inputs.image-tag }}
   ADDITIONAL_TAG: ${{ inputs.additional-tag }}
+  ADDITIONAL_TAG_2: ${{ inputs.additional-tag-2 }}
   VERSION: ${{ inputs.version }}
   BRANCH: ${{ inputs.branch }}
   DATE: ${{ inputs.date }}
@@ -123,7 +124,7 @@ jobs:
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
             ${{ env.ADDITIONAL_TAG != '' && format('{0}/{1}:{2}', env.ECR_REGISTRY, env.ECR_REPOSITORY, env.ADDITIONAL_TAG) || '' }}
-      
+            ${{ env.ADDITIONAL_TAG_2 != '' && format('{0}/{1}:{2}', env.ECR_REGISTRY, env.ECR_REPOSITORY, env.ADDITIONAL_TAG_2) || '' }}
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         if: ${{ inputs.scan-image }}
