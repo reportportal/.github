@@ -1,8 +1,19 @@
 name: Update Jira Fix Version
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_call:
+    inputs:
+      jira-server:
+        description: 'Jira Server'
+        required: true
+        type: string
+    secrets:
+      JIRA_TOKEN:
+        description: 'Jira Token'
+        required: true
+
+env:
+  JIRA_SERVER: ${{ inputs.jira-server }}
 
 jobs:
   sync-version-with-jira-issues:
@@ -23,5 +34,5 @@ jobs:
       - name: Update Jira Issues
         run: python3 -c "$(wget -q -O - https://raw.githubusercontent.com/reportportal/jira-versions-sync/main/main.py)"
         env:
-          JIRA_SERVER: ${{ vars.JIRA_SERVER }}
+          JIRA_SERVER: ${{ env.JIRA_SERVER }}
           JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
