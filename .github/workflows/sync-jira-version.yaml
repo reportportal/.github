@@ -1,4 +1,4 @@
-name: Update Jira Fix Version
+name: Sinc Jira Version
 
 on:
   workflow_call:
