@@ -4,6 +4,8 @@ on:
 
 env:
   RP_INSTANCE: 'https://reportportal.epam.com'
+  BASE_URL: 'https://reportportal.epam.com'
+  RPENDPOINT: 'https://reportportal.epam.com/api/v1'
   RP_PROJECT: 'epm-rpp'
   SCRIPT_TIMEOUT_SECONDS: 60
   REQUEST_TIMEOUT_SECONDS: 60
@@ -83,6 +85,10 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.42.1-jammy
     env:
       TESTS_HOME_DIR: demo-ui-test
+      RPAPIKEY: ${{ secrets.PROD_RP_API_KEY }}
+      RP_ENV: prod
+      RPPROJECT: epm-rpp
+
     steps:
       - uses: actions/checkout@v4
     
@@ -92,7 +98,7 @@ jobs:
 
       - name: Checkout code
         run: |
-          git clone https://oauth2:${{ secrets.GITLAB_PERSONAL_ACCESS_TOKEN }}@git.epam.com/EPM-RPP/demo-ui-test.git
+          git clone https://oauth2:${{ secrets.GITLAB_PERSONAL_ACCESS_TOKEN }}@ 
       
       - name: npm install
         working-directory: ${{ env.TESTS_HOME_DIR }}
