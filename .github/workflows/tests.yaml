@@ -71,7 +71,7 @@ jobs:
 
   run-tests:
     name: Run UI tests
-    runs-on: rpp-tests-github-runner
+    runs-on: tests
     needs: docker-compose
     steps:
       - name: Checkout code
