@@ -80,7 +80,7 @@ jobs:
     runs-on: tests
     needs: docker-compose
     container:
-      image: mcr.microsoft.com/playwright:v1.45.1-jammy
+      image: mcr.microsoft.com/playwright:v1.42.1-jammy
     env:
       TESTS_HOME_DIR: demo-ui-test
     steps:
