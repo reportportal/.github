@@ -74,18 +74,34 @@ jobs:
     runs-on: tests
     needs: docker-compose
     steps:
+      - uses: actions/checkout@v4
+    
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
       - name: Checkout code
         run: |
           git clone https://oauth2:${{ secrets.GITLAB_PERSONAL_ACCESS_TOKEN }}@git.epam.com/EPM-RPP/demo-ui-test.git
+      
       - name: npm install
-        run: cd demo-ui-test && npm i
+        working-directory: demo-ui-test
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: demo-ui-test
+        run: npx playwright install --with-deps
+        
       - name: Create .env file
-        run: cp /home/ubuntu/.env demo-ui-test
-      - name: npm test 
-        run:  | 
-          cd demo-ui-test
+        working-directory: demo-ui-test
+        run: cp /home/ubuntu/.env ./
+
+      - name: npm test
+        working-directory: demo-ui-test
+        run: | 
           npm test | tee ./console.log || true
-           sed -rn 's|.*launches/all/([0-9]+).*|LAUNCH_UUID=\1|p' ./console.log >> "$GITHUB_ENV"
+          sed -rn 's|.*launches/all/([0-9]+).*|LAUNCH_UUID=\1|p' ./console.log >> "$GITHUB_ENV"
+
       - name: Quality Gate
         run: |
           echo "Quality gate"
