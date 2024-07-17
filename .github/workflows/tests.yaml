@@ -73,6 +73,8 @@ jobs:
     name: Run UI tests
     runs-on: tests
     needs: docker-compose
+    container:
+      image: mcr.microsoft.com/playwright:v1.45.1-jammy
     steps:
       - uses: actions/checkout@v4
     
@@ -87,10 +89,6 @@ jobs:
       - name: npm install
         working-directory: demo-ui-test
         run: npm ci
-
-      - name: Install Playwright Browsers
-        working-directory: demo-ui-test
-        run: npx playwright install --with-deps
         
       - name: Create .env file
         working-directory: demo-ui-test
