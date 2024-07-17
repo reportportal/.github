@@ -101,7 +101,7 @@ jobs:
       - name: Download .env file
         uses: actions/download-artifact@v3
         with:
-          name: env
+          name: env-file
 
       - name: Move .env file
         run: mv .env ${{ env.TESTS_HOME_DIR }}
