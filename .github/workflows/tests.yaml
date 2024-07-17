@@ -88,13 +88,15 @@ jobs:
       RPAPIKEY: ${{ secrets.PROD_RP_API_KEY }}
       RP_ENV: prod
       RPPROJECT: epm-rpp
-
     steps:
       - uses: actions/checkout@v4
-    
+
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+      
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v2
 
       - name: Checkout code
         run: |
