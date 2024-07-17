@@ -70,12 +70,6 @@ jobs:
 
       - name: Run Docker compose up
         run: docker compose -f docker-compose-release.yml -p reportportal up -d
-      
-      - name: Upload .env file
-        uses: actions/upload-artifact@v3
-        with:
-          name: env-file
-          path: .env
 
   run-tests:
     name: Run UI tests
@@ -105,14 +99,6 @@ jobs:
       - name: npm install
         working-directory: ${{ env.TESTS_HOME_DIR }}
         run: npm ci
-
-      - name: Download .env file
-        uses: actions/download-artifact@v3
-        with:
-          name: env-file
-
-      - name: Move .env file
-        run: mv .env ${{ env.TESTS_HOME_DIR }}
 
       - name: npm test
         working-directory: ${{ env.TESTS_HOME_DIR }}
