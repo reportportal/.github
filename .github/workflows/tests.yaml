@@ -49,7 +49,7 @@ jobs:
 
   docker-compose:
     name: Docker run
-    runs-on: rpp-tests-github-runner
+    runs-on: tests
     needs: ec2-start
     steps:
       - name: Checkout code
