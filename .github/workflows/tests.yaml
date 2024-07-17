@@ -3,13 +3,14 @@ on:
   workflow_dispatch:
 
 env:
-  RP_INSTANCE: 'https://reportportal.epam.com'
   BASE_URL: 'https://reportportal.epam.com'
-  RPENDPOINT: 'https://reportportal.epam.com/api/v1'
-  RP_PROJECT: 'epm-rpp'
+  RPAPIKEY: ${{ secrets.PROD_RP_API_KEY }}
+  RP_ENV: prod
+  RPPROJECT: epm-rpp
   SCRIPT_TIMEOUT_SECONDS: 60
   REQUEST_TIMEOUT_SECONDS: 60
   AWS_EC2_INSTANCE_ID: 'i-0b0f7c7683adb65f4'
+  
 
 jobs:
   check-tag:
@@ -79,9 +80,6 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.42.1-jammy
     env:
       TESTS_HOME_DIR: demo-ui-test
-      RPAPIKEY: ${{ secrets.PROD_RP_API_KEY }}
-      RP_ENV: prod
-      RPPROJECT: epm-rpp
     steps:
       - uses: actions/checkout@v4
 
@@ -91,6 +89,9 @@ jobs:
       
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@v2
+
+      - name: Set RPENDPOINT
+        run: echo "RPENDPOINT=${{ env.BASE_URL }}/api/v1" >> $GITHUB_ENV
 
       - name: Checkout code
         run: |
@@ -115,7 +116,7 @@ jobs:
           while ( [ -z "$QUALITY_GATE_STATUS" ] || [ "$QUALITY_GATE_STATUS" == "UNDEFINED" ] ) && [ $(( $(date +%s) - START_TIME )) -lt ${{ env.SCRIPT_TIMEOUT_SECONDS }} ]; do
             echo "Waiting for quality gate status..."
             sleep 10
-            QUALITY_GATE_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.PROD_RP_API_KEY }}" --max-time "${{ env.REQUEST_TIMEOUT_SECONDS }}" "${{ env.RP_INSTANCE }}/api/v1/${{ env.RP_PROJECT }}/launch/${LAUNCH_UUID}")
+            QUALITY_GATE_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.PROD_RP_API_KEY }}" --max-time "${{ env.REQUEST_TIMEOUT_SECONDS }}" "${{ env.BASE_URL }}/api/v1/${{ env.RPPROJECT }}/launch/${LAUNCH_UUID}")
             QUALITY_GATE_STATUS=$(echo "$QUALITY_GATE_JSON" | jq -r '.metadata.qualityGate.status // empty')
           done
           if [ "$QUALITY_GATE_STATUS" != "PASSED" ]; then
