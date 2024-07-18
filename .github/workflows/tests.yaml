@@ -1,4 +1,4 @@
-name: Images rebuild
+name: Image rebuild
 on: 
   workflow_dispatch:
 
@@ -55,6 +55,10 @@ jobs:
     runs-on: tests
     needs: ec2-start
     steps:
+      - name: Chown user
+        run: |
+          sudo chown -R $USER:$USER $GITHUB_WORKSPACE
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
