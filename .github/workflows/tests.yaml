@@ -152,7 +152,7 @@ jobs:
         with:
           owner: reportportal
           repo: ${{ matrix.repo }}
-          github_token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN_NEW }}
           workflow_file_name: dockerhub-release-revision.yml
           ref: develop
           wait_interval: 60
