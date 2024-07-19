@@ -132,29 +132,28 @@ jobs:
             echo "Pipeline passed."
           fi
 
-     # - name: Run Docker compose down
-     #   run: docker compose -p reportportal down
+      - name: Run Docker compose down
+        run: docker compose -p reportportal down
 
-#   trigger-retag:
-#     name: Trigger Docker retag
-#     needs: run-tests
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         repo: ['service-ui']
-#     steps:
-#       - uses: convictional/trigger-workflow-and-wait@v1.6.1
-#         with:
-#           owner: ahmedazhazh
-#           repo: ${{ matrix.repo }}
-#           github_token: ${{ secrets.GH_TOKEN }}
-#           workflow_file_name: dockerhub-release-revision.yml
-#           ref: develop
-#           wait_interval: 60
-#           client_payload: '{"version":"${{github.run_number}}"}'
-#           propagate_failure: true
-#           trigger_workflow: true
-#           wait_workflow: true
+  trigger-retag:
+    name: Trigger Docker retag
+    needs: run-tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: ['service-ui']
+    steps:
+      - uses: convictional/trigger-workflow-and-wait@v1.6.1
+        with:
+          owner: reportportal
+          repo: ${{ matrix.repo }}
+          github_token: ${{ secrets.GH_TOKEN }}
+          workflow_file_name: dockerhub-release-revision.yml
+          ref: develop
+          wait_interval: 60
+          propagate_failure: true
+          trigger_workflow: true
+          wait_workflow: true
 
 # ec2-stop:
 #   runs-on: ubuntu-latest
