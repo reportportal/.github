@@ -131,7 +131,12 @@ jobs:
             echo "Quality gate status: $QUALITY_GATE_STATUS"
             echo "Pipeline passed."
           fi
-
+  
+  docker-compose-down:
+    name: Docker compose down
+    runs-on: tests
+    needs: run-tests
+    steps:
       - name: Run Docker compose down
         run: docker compose -p reportportal down
 
