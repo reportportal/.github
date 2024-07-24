@@ -17,25 +17,50 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        repo: ['service-index', 'service-ui', 'service-api', 'service-authorization', 'service-jobs', 'service-auto-analyzer', 'service-metrics-gatherer', 'migrations']
+        repo: ['service-ui']
+        # repo: ['service-index', 'service-ui', 'service-api', 'service-authorization', 'service-jobs', 'service-auto-analyzer', 'service-metrics-gatherer', 'migrations']
     steps:
-    - uses: oprypin/find-latest-tag@v1
+
+    - id: get_version
+      uses: oprypin/find-latest-tag@v1
       with:
         repository: reportportal/${{ matrix.repo }}
         releases-only: true
-      id: tagstep
 
-    - name: Save service version to env file
-      shell: bash
+    - name: Get next Docker version
+      id: set_tag
       run: |
-        TAG_NAME=$(echo "${{ matrix.repo }}" | tr [:lower:]- [:upper:]_)
-        echo "${TAG_NAME}_TAG=${{ steps.tagstep.outputs.tag }}" >> ./${{ matrix.repo }}.env
+          DOCKER_IMAGE_NAME="reportportal/${{ matrix.repo }}"
+          INPUT_VERSION=${{ steps.get_version.outputs.tag }}
+          TAG_NAME=$(echo "${{ matrix.repo }}" | tr [:lower:]- [:upper:]_)
+          TAGS_JSON=$(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_IMAGE_NAME}/tags/?page_size=1000")
+          LATEST_REVISION_NUMBER=$(echo "$TAGS_JSON" | jq -r --arg INPUT_VERSION "$INPUT_VERSION" '.results[] | select(.name | startswith($INPUT_VERSION+"-r")) | .name' | awk -F-r '{print $2}' | sort -nr | head -n1)
+          if [[ -z "$LATEST_REVISION_NUMBER" ]]; then
+            NEXT_VERSION="$INPUT_VERSION-r1"
+          else
+            NEXT_VERSION="$INPUT_VERSION-r$(($LATEST_REVISION_NUMBER + 1))"
+          fi
+          echo "tag=${NEXT_VERSION}" >> $GITHUB_OUTPUT
+          echo "${TAG_NAME}_TAG=${NEXT_VERSION}" >> ./${{ matrix.repo }}.env
 
     - name: Upload .env file
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.repo }}-env
         path: ./${{ matrix.repo }}.env
+
+    - uses: convictional/trigger-workflow-and-wait@v1.6.1
+      with:
+        owner: reportportal
+        repo: ${{ matrix.repo }}
+        github_token: ${{ secrets.GH_TOKEN }}
+        workflow_file_name: build-revision-image.yaml
+        ref: develop
+        wait_interval: 60
+        client_payload: '{"version":"${{steps.set_tag.outputs.tag}}"}'
+        propagate_failure: true
+        trigger_workflow: true
+        wait_workflow: true
 
   ec2-start:
     name: Start EC2 instance
