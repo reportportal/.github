@@ -55,7 +55,7 @@ jobs:
         repo: ${{ matrix.repo }}
         github_token: ${{ secrets.GH_TOKEN_NEW }}
         workflow_file_name: build-revision-image.yaml
-        ref: develop
+        ref: ${{ steps.get_version.outputs.tag}}
         wait_interval: 60
         client_payload: '{"version":"${{steps.set_tag.outputs.tag}}"}'
         propagate_failure: true
