@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        repo: ['service-ui']
-        # repo: ['service-index', 'service-ui', 'service-api', 'service-authorization', 'service-jobs', 'service-auto-analyzer', 'service-metrics-gatherer', 'migrations']
+        # repo: ['service-ui']
+        repo: ['service-index', 'service-ui', 'service-api', 'service-authorization', 'service-jobs', 'service-auto-analyzer', 'service-metrics-gatherer', 'migrations']
     steps:
 
     - id: get_version
@@ -50,6 +50,7 @@ jobs:
         path: ./${{ matrix.repo }}.env
 
     - uses: convictional/trigger-workflow-and-wait@v1.6.1
+      if: ${{ matrix.repo == 'service-ui' }}
       with:
         owner: reportportal
         repo: ${{ matrix.repo }}
@@ -62,108 +63,108 @@ jobs:
         trigger_workflow: true
         wait_workflow: true
 
-  # ec2-start:
-  #   name: Start EC2 instance
-  #   runs-on: ubuntu-latest
-  #   needs: check-tag
-  #   steps:
-  #     - name: Start AWS EC2
-  #       run: |
-  #         aws ec2 start-instances --instance-ids ${{env.AWS_EC2_INSTANCE_ID }}
-  #       env:
-  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  ec2-start:
+    name: Start EC2 instance
+    runs-on: ubuntu-latest
+    needs: check-tag
+    steps:
+      - name: Start AWS EC2
+        run: |
+          aws ec2 start-instances --instance-ids ${{env.AWS_EC2_INSTANCE_ID }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
-  # docker-compose:
-  #   name: Docker run
-  #   runs-on: tests
-  #   needs: ec2-start
-  #   steps:
-  #     - name: Chown user
-  #       run: |
-  #         sudo chown -R $USER:$USER $GITHUB_WORKSPACE
+  docker-compose:
+    name: Docker run
+    runs-on: tests
+    needs: ec2-start
+    steps:
+      - name: Chown user
+        run: |
+          sudo chown -R $USER:$USER $GITHUB_WORKSPACE
 
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #       with:
-  #         repository: reportportal/reportportal
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          repository: reportportal/reportportal
 
-  #     - name: Download all workflow run artifacts
-  #       uses: actions/download-artifact@v3
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
 
-  #     - name: Merge env files
-  #       run: cat **/*.env >> .env
+      - name: Merge env files
+        run: cat **/*.env >> .env
 
-  #     - name: Display .env content
-  #       run: cat .env
+      - name: Display .env content
+        run: cat .env
 
-  #     - name: Run Docker compose up
-  #       run: docker compose -f docker-compose-release.yml -p reportportal up -d
+      - name: Run Docker compose up
+        run: docker compose -f docker-compose-release.yml -p reportportal up -d
 
-  # run-tests:
-  #   name: Run UI tests
-  #   runs-on: tests
-  #   needs: docker-compose
-  #   container:
-  #     image: mcr.microsoft.com/playwright:v1.42.1-jammy
-  #   env:
-  #     TESTS_HOME_DIR: demo-ui-test
-  #   steps:
-  #     - uses: actions/checkout@v4
+  run-tests:
+    name: Run UI tests
+    runs-on: tests
+    needs: docker-compose
+    container:
+      image: mcr.microsoft.com/playwright:v1.42.1-jammy
+    env:
+      TESTS_HOME_DIR: demo-ui-test
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 18
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
       
-  #     - name: 'Setup jq'
-  #       uses: dcarbone/install-jq-action@v2
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v2
 
-  #     - name: Set RPENDPOINT
-  #       run: echo "RPENDPOINT=${{ env.BASE_URL }}/api/v1" >> $GITHUB_ENV
+      - name: Set RPENDPOINT
+        run: echo "RPENDPOINT=${{ env.BASE_URL }}/api/v1" >> $GITHUB_ENV
 
-  #     - name: Checkout code
-  #       run: |
-  #         git clone https://oauth2:${{ secrets.GITLAB_PERSONAL_ACCESS_TOKEN }}@git.epam.com/EPM-RPP/demo-ui-test.git
+      - name: Checkout code
+        run: |
+          git clone https://oauth2:${{ secrets.GITLAB_PERSONAL_ACCESS_TOKEN }}@git.epam.com/EPM-RPP/demo-ui-test.git
       
-  #     - name: npm install
-  #       working-directory: ${{ env.TESTS_HOME_DIR }}
-  #       run: npm ci
+      - name: npm install
+        working-directory: ${{ env.TESTS_HOME_DIR }}
+        run: npm ci
 
-  #     - name: npm test
-  #       working-directory: ${{ env.TESTS_HOME_DIR }}
-  #       run: | 
-  #         npm test | tee ./console.log || true
-  #         sed -rn 's|.*launches/all/([0-9]+).*|LAUNCH_UUID=\1|p' ./console.log >> "$GITHUB_ENV"
+      - name: npm test
+        working-directory: ${{ env.TESTS_HOME_DIR }}
+        run: | 
+          npm test | tee ./console.log || true
+          sed -rn 's|.*launches/all/([0-9]+).*|LAUNCH_UUID=\1|p' ./console.log >> "$GITHUB_ENV"
 
-  #     - name: Quality Gate
-  #       run: |
-  #         echo "Quality gate"
-  #         echo "LAUNCH_UUID: $LAUNCH_UUID"
-  #         QUALITY_GATE_STATUS=""
-  #         START_TIME=$(date +%s)
-  #         while ( [ -z "$QUALITY_GATE_STATUS" ] || [ "$QUALITY_GATE_STATUS" == "UNDEFINED" ] ) && [ $(( $(date +%s) - START_TIME )) -lt ${{ env.SCRIPT_TIMEOUT_SECONDS }} ]; do
-  #           echo "Waiting for quality gate status..."
-  #           sleep 10
-  #           QUALITY_GATE_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.PROD_RP_API_KEY }}" --max-time "${{ env.REQUEST_TIMEOUT_SECONDS }}" "${{ env.BASE_URL }}/api/v1/${{ env.RPPROJECT }}/launch/${LAUNCH_UUID}")
-  #           QUALITY_GATE_STATUS=$(echo "$QUALITY_GATE_JSON" | jq -r '.metadata.qualityGate.status // empty')
-  #         done
-  #         if [ "$QUALITY_GATE_STATUS" != "PASSED" ]; then
-  #           echo "Quality gate status: $QUALITY_GATE_STATUS"
-  #           echo "Failing the pipeline."
-  #           exit 1
-  #         else
-  #           echo "Quality gate status: $QUALITY_GATE_STATUS"
-  #           echo "Pipeline passed."
-  #         fi
+      - name: Quality Gate
+        run: |
+          echo "Quality gate"
+          echo "LAUNCH_UUID: $LAUNCH_UUID"
+          QUALITY_GATE_STATUS=""
+          START_TIME=$(date +%s)
+          while ( [ -z "$QUALITY_GATE_STATUS" ] || [ "$QUALITY_GATE_STATUS" == "UNDEFINED" ] ) && [ $(( $(date +%s) - START_TIME )) -lt ${{ env.SCRIPT_TIMEOUT_SECONDS }} ]; do
+            echo "Waiting for quality gate status..."
+            sleep 10
+            QUALITY_GATE_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.PROD_RP_API_KEY }}" --max-time "${{ env.REQUEST_TIMEOUT_SECONDS }}" "${{ env.BASE_URL }}/api/v1/${{ env.RPPROJECT }}/launch/${LAUNCH_UUID}")
+            QUALITY_GATE_STATUS=$(echo "$QUALITY_GATE_JSON" | jq -r '.metadata.qualityGate.status // empty')
+          done
+          if [ "$QUALITY_GATE_STATUS" != "PASSED" ]; then
+            echo "Quality gate status: $QUALITY_GATE_STATUS"
+            echo "Failing the pipeline."
+            exit 1
+          else
+            echo "Quality gate status: $QUALITY_GATE_STATUS"
+            echo "Pipeline passed."
+          fi
   
-  # docker-compose-down:
-  #   name: Docker compose down
-  #   runs-on: tests
-  #   needs: run-tests
-  #   steps:
-  #     - name: Run Docker compose down
-  #       run: docker compose -p reportportal down
+  docker-compose-down:
+    name: Docker compose down
+    runs-on: tests
+    needs: run-tests
+    steps:
+      - name: Run Docker compose down
+        run: docker compose -p reportportal down
 
   trigger-retag:
     name: Trigger Docker retag
