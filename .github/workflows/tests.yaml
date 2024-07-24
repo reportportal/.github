@@ -168,7 +168,7 @@ jobs:
 
   trigger-retag:
     name: Trigger Docker retag
-    needs: check-tag
+    needs: run-tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
