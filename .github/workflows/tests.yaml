@@ -57,7 +57,7 @@ jobs:
         github_token: ${{ secrets.GH_TOKEN_NEW }}
         workflow_file_name: build-revision-image.yaml
         ref: develop
-        wait_interval: 60
+        wait_interval: 30
         client_payload: '{"version":"${{steps.set_tag.outputs.tag}}"}'
         propagate_failure: true
         trigger_workflow: true
@@ -95,7 +95,10 @@ jobs:
 
       - name: Merge env files
         run: cat **/*.env >> .env
-
+      
+      - name: Add repo to .env
+        run: echo "ECR_REPO=${{ secrets.ECR_REPO }}" >> .env
+      
       - name: Display .env content
         run: cat .env
 
