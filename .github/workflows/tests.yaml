@@ -59,7 +59,7 @@ jobs:
         wait_interval: 60
         client_payload: '{"version":"${{steps.set_tag.outputs.tag}}"}'
         propagate_failure: true
-        trigger_workflow: false
+        trigger_workflow: true
         wait_workflow: true
 
   # ec2-start:
