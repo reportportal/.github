@@ -44,7 +44,7 @@ jobs:
           echo "${TAG_NAME}_TAG=${NEXT_VERSION}" >> ./${{ matrix.repo }}.env
 
     - name: Upload .env file
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.repo }}-env
         path: ./${{ matrix.repo }}.env
@@ -59,7 +59,7 @@ jobs:
         wait_interval: 60
         client_payload: '{"version":"${{steps.set_tag.outputs.tag}}"}'
         propagate_failure: true
-        trigger_workflow: true
+        trigger_workflow: false
         wait_workflow: true
 
   ec2-start:
