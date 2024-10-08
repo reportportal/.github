@@ -61,6 +61,11 @@ Available plugins developed by ReportPortal team:
 * [`plugin-saucelabs`](https://github.com/reportportal/plugin-saucelabs) Sauce Labs Plugin. Interaction with Sauce Labs.
 * [`plugin-bts-jira-cloud`](https://github.com/reportportal/plugin-bts-jira-cloud) Plugin to integrate JIRA Cloud with ReportPortal.
 * [`plugin-bts-azure`](https://github.com/reportportal/plugin-bts-azure) AzureDevOps bug tracking system integration for ReportPortal.
+* [`plugin-bts-monday`](https://github.com/reportportal/plugin-bts-monday) Monday Plugin. Interaction with Monday.
+* [`plugin-bts-gitlab`](https://github.com/reportportal/plugin-bts-gitlab) Gitlab Plugin. Interaction with Gitlab.
+* [`plugin-slack`](https://github.com/reportportal/plugin-slack/) Slack Plugin. Interaction with Slack.
+* [`plugin-import-junit`](https://github.com/reportportal/plugin-import-junit) JUnit Import Plugin. Import of Junit test results.
+* [`plugin-import-robot`](https://github.com/reportportal/plugin-import-robot) RobotFramework Import Plugin. Import of Robot Framework test results.
 
 **Client side** adapters related repositories:
 
