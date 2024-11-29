@@ -53,6 +53,11 @@ on:
         required: false
         type: boolean
         default: false
+      runs-on:
+        description: 'Type of runner to use'
+        required: true
+        type: string
+        default: 'ubuntu-latest'
     secrets:
       AWS_ACCESS_KEY_ID:
         description: 'AWS Access Key ID'
@@ -70,7 +75,7 @@ on:
 env:
   AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ${{ inputs.ecr-repository }} # set this to your Amazon ECR repository name
-  PLATFORMS: ${{ inputs.build-platforms }}     # set target build platforms. By default linux/amd64
+  PLATFORMS: ${{ inputs.build-platforms }}     # set target build platforms. By default, linux/amd64
   IMAGE_TAG: ${{ inputs.image-tag }}
   ADDITIONAL_TAG: ${{ inputs.additional-tag }}
   ADDITIONAL_TAG_2: ${{ inputs.additional-tag-2 }}
@@ -81,7 +86,7 @@ env:
 jobs:
   build-and-export:
     name: Build and export to AWS ECR
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
