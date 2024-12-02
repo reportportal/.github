@@ -55,7 +55,7 @@ on:
         default: false
       runs-on:
         description: 'Type of runner to use'
-        required: true
+        required: false
         type: string
         default: 'ubuntu-latest'
     secrets:
