@@ -43,7 +43,13 @@ on:
 jobs:
   build-gradle:
     name: Build check
-    runs-on: ${{ inputs.runs-on }} 
+    runs-on: ${{ inputs.runs-on }}
+    
+    env:
+      DRILL_AGENT_ENABLED: ${{ inputs.drill-agent-enabled }}
+      DRILL_API_URL: ${{ inputs.drill-api-url }}
+      DRILL_API_KEY: ${{ inputs.drill-api-key }}
+    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
