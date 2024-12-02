@@ -20,9 +20,25 @@ on:
         default: 'github-pr-review'
       runs-on:
         description: 'Type of runner to use'
-        required: true
+        required: false
         type: string
         default: 'ubuntu-latest'
+      drill-agent-enabled:
+        description: 'Enable Drill agent'
+        required: false
+        type: string
+        default: ''
+      drill-api-url:
+        description: 'Drill API URL'
+        required: false
+        type: string
+        default: ''
+      drill-api-key:
+        description: 'Drill API key'
+        required: false
+        type: string
+        default: ''
+        
 
 jobs:
   build-gradle:
