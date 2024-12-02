@@ -18,11 +18,16 @@ on:
         type: string
         required: false
         default: 'github-pr-review'
+      runs-on:
+        description: 'Type of runner to use'
+        required: true
+        type: string
+        default: 'ubuntu-latest'
 
 jobs:
   build-gradle:
     name: Build check
-    runs-on: ubuntu-latest 
+    runs-on: ${{ inputs.runs-on }} 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -49,7 +54,7 @@ jobs:
         ./gradlew build
   
   reviewdog:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     name: Java Checkstyle
     steps:
     - name: Checkout
@@ -64,7 +69,7 @@ jobs:
         reporter: ${{ inputs.checkstyle-reporter }}
   
   # sonarcloud:
-  #   runs-on: ubuntu-latest
+  #   runs-on: ${{ inputs.runs-on }}
   #   name: SonarCloud Scan
   #   steps:
   #   - name: Checkout
