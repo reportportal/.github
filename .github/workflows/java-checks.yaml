@@ -24,21 +24,18 @@ on:
         type: string
         default: 'ubuntu-latest'
       drill-agent-enabled:
-        description: 'Enable Drill agent'
-        required: false
+        description: 'Drill Agent Enabled'
         type: string
-        default: ''
+        required: false
+        default: 'false'
       drill-api-url:
         description: 'Drill API URL'
-        required: false
         type: string
-        default: ''
+        required: false
       drill-api-key:
-        description: 'Drill API key'
-        required: false
+        description: 'Drill API Key'
         type: string
-        default: ''
-        
+        required: false
 
 jobs:
   build-gradle:
