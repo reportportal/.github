@@ -28,14 +28,6 @@ on:
         type: string
         required: false
         default: 'false'
-      drill-api-url:
-        description: 'Drill API URL'
-        type: string
-        required: false
-      drill-api-key:
-        description: 'Drill API Key'
-        type: string
-        required: false
 
 jobs:
   build-gradle:
@@ -44,8 +36,8 @@ jobs:
     
     env:
       DRILL_AGENT_ENABLED: ${{ inputs.drill-agent-enabled }}
-      DRILL_API_URL: ${{ inputs.drill-api-url }}
-      DRILL_API_KEY: ${{ inputs.drill-api-key }}
+      DRILL_API_URL: ${{ secrets.DRILL_API_URL }}
+      DRILL_API_KEY: ${{ secrets.DRILL_API_KEY }}
     
     steps:
     - name: Checkout repository
