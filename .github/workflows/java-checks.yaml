@@ -28,6 +28,13 @@ on:
         type: string
         required: false
         default: 'false'
+    secrets:
+      DRILL_API_URL:
+        description: 'Drill URL'
+        required: false
+      DRILL_API_KEY:
+        description: 'Drill API Key'
+        required: false
 
 jobs:
   build-gradle:
