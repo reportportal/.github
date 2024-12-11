@@ -18,6 +18,11 @@ on:
         type: string
         required: false
         default: 'github-pr-review'
+      release-mode:
+        description: 'Release mode'
+        type: boolean
+        required: false
+        default: false
       runs-on:
         description: 'Type of runner to use'
         required: false
@@ -48,10 +53,10 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
         distribution: ${{ inputs.distribution }}
         java-version: ${{ inputs.java-version }}
@@ -69,7 +74,7 @@ jobs:
     - name: Build with Gradle
       id: build
       run: |
-        ./gradlew build
+        ./gradlew build -PreleaseMode=${{ inputs.release-mode }}
   
   reviewdog:
     runs-on: ${{ inputs.runs-on }}
@@ -85,40 +90,3 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: ${{ inputs.checkstyle-reporter }}
-  
-  # sonarcloud:
-  #   runs-on: ${{ inputs.runs-on }}
-  #   name: SonarCloud Scan
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v3
-  #     with:
-  #       fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-    
-  #   - name: Set up JDK 11
-  #     uses: actions/setup-java@v1
-  #     with:
-  #       java-version: 11
-    
-  #   - name: Cache SonarCloud packages
-  #     uses: actions/cache@v1
-  #     with:
-  #       path: ~/.sonar/cache
-  #       key: ${{ runner.os }}-sonar
-  #       restore-keys: ${{ runner.os }}-sonar
-    
-  #   - name: Cache Gradle packages
-  #     uses: actions/cache@v1
-  #     with:
-  #       path: ~/.gradle/caches
-  #       key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-  #       restore-keys: ${{ runner.os }}-gradle
-    
-  #   - name: Report test coverage
-  #     run: ./gradlew test jacocoTestReport
-    
-  #   - name: Build and analyze
-  #     env:
-  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-  #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #     run: ./gradlew build sonarqube --info
