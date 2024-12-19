@@ -71,6 +71,9 @@ jobs:
         email: 'support@reportportal.io'
         token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Git submodules init
+      run: git submodule update --init --recursive
+
     - name: Build with Gradle
       id: build
       run: |
