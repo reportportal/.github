@@ -54,6 +54,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: true
 
     - name: Set up JDK
       uses: actions/setup-java@v4
@@ -71,9 +73,6 @@ jobs:
         email: 'support@reportportal.io'
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Git submodules init
-      run: git submodule update --init --recursive
-
     - name: Build with Gradle
       id: build
       run: |
@@ -84,7 +83,7 @@ jobs:
     name: Java Checkstyle
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
     
