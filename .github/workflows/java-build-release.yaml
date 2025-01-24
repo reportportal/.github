@@ -59,6 +59,17 @@ jobs:
           -PgpgPrivateKey="${{ secrets.GPG_PRIVATE_KEY }}" \
           -Prelease.releaseVersion=${{ inputs.release_version }}
 
+      - name: List files in build/libs
+        run: |
+          echo "Listing files in build/libs:"
+          ls -al build/libs/
+
+      - name: Upload Debug Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Debug JAR Files
+          path: build/libs/*.jar
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
