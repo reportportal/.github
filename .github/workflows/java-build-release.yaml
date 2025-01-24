@@ -40,7 +40,7 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
+      
       - name: Setup git credentials
         uses: oleksiyrudenko/gha-git-credentials@v2-latest
         with:
@@ -48,7 +48,7 @@ jobs:
           email: 'support@reportportal.io'
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Publish Artifacts
+      - name: Build Artifacts
         run: |
           ${{ inputs.gradle_command }} --no-build-cache --exclude-task test \
           -PreleaseMode=true \
@@ -58,3 +58,11 @@ jobs:
           -PgpgPassphrase=${{ secrets.GPG_PASSPHRASE }} \
           -PgpgPrivateKey="${{ secrets.GPG_PRIVATE_KEY }}" \
           -Prelease.releaseVersion=${{ inputs.release_version }}
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: build/libs/service-api-*.jar
+          asset_name: service-api-${{ inputs.release_version }}.jar
+          asset_content_type: application/java-archive
