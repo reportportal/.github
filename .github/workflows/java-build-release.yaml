@@ -1,0 +1,60 @@
+name: Release Artifact Publisher
+
+on:
+  workflow_call:
+    inputs:
+      release_version:
+        required: true
+        type: string
+      repository_url:
+        required: true
+        type: string
+      gradle_command:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_USER_NAME: ${{ github.actor }}
+
+    steps:
+      - name: Validate Branch
+        if: ${{ github.ref != 'refs/heads/' + inputs.branch }}
+        run: |
+          echo "This workflow can only run on the branch '${{ inputs.branch }}'."
+          exit 1
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '21'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Setup git credentials
+        uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          name: 'reportportal.io'
+          email: 'support@reportportal.io'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Publish Artifacts
+        run: |
+          ${{ inputs.gradle_command }} --no-build-cache --exclude-task test \
+          -PreleaseMode=true \
+          -PgithubUserName=${{env.GH_USER_NAME}} \
+          -PgithubToken=${{ secrets.GITHUB_TOKEN }} \
+          -PpublishRepo=${{ inputs.repository_url }}${{ github.repository }} \
+          -PgpgPassphrase=${{ secrets.GPG_PASSPHRASE }} \
+          -PgpgPrivateKey="${{ secrets.GPG_PRIVATE_KEY }}" \
+          -Prelease.releaseVersion=${{ inputs.release_version }}
