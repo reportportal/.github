@@ -23,6 +23,8 @@ jobs:
       GH_USER_NAME: ${{ github.actor }}
 
     steps:
+      - name: Inspect GitHub Context
+        run: echo "${{ toJson(github.event) }}"
       - name: Validate Branch
         if: ${{ github.ref != format('refs/heads/{0}', inputs.branch) }}
         run: |
