@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Validate Branch
-        if: ${{ github.ref != format('refs/heads/{0}', inputs.branch) }}
+        if: ${{ github.event_name != 'release' && github.ref != format('refs/heads/{0}', inputs.branch) }}
         run: |
           echo "This workflow can only run on the branch '${{ inputs.branch }}'."
           exit 1
