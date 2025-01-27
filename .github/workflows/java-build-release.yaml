@@ -81,3 +81,5 @@ jobs:
           asset_path: build/libs/service-api-${{ inputs.release_version }}.jar
           asset_name: service-api-${{ inputs.release_version }}.jar
           asset_content_type: application/java-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
