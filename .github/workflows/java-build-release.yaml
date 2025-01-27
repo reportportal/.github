@@ -63,8 +63,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: build/libs/service-api-${{ inputs.release_version }}.jar
-          asset_name: service-api-${{ inputs.release_version }}.jar
+          asset_path: build/libs/service-*-${{ inputs.release_version }}.jar
+          asset_name: service-*-${{ inputs.release_version }}.jar
           asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
