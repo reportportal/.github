@@ -68,14 +68,16 @@ jobs:
              exit 1
            fi
            echo "Found file: $file"
+           filename=$(basename "$file")
            echo "file_path=$file" >> $GITHUB_ENV
+           echo "file_name=$filename" >> $GITHUB_ENV
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ${{ env.file_path }}
-          asset_name: ${{ env.file_path##*/ }}
+          asset_name: ${{ env.file_name }}
           asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
