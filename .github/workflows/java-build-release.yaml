@@ -59,12 +59,23 @@ jobs:
           -PgpgPrivateKey="${{ secrets.GPG_PRIVATE_KEY }}" \
           -Prelease.releaseVersion=${{ inputs.release_version }}
 
+      - name: Find Matching File
+        id: find_file
+        run: |
+          file=$(ls build/libs/service-*-${{ inputs.release_version }}.jar | head -n 1)
+          if [ -z "$file" ]; then
+             echo "No matching file found!"
+             exit 1
+           fi
+           echo "Found file: $file"
+           echo "file_path=$file" >> $GITHUB_ENV
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: build/libs/service-*-${{ inputs.release_version }}.jar
-          asset_name: service-*-${{ inputs.release_version }}.jar
+          asset_path: ${{ env.file_path }}
+          asset_name: ${{ env.file_path##*/ }}
           asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
