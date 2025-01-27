@@ -40,21 +40,6 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
-      - name: Debug GITHUB_TOKEN
-        run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Debug GH_TOKEN
-        run: echo "GH_TOKEN=${{ secrets.GH_TOKEN }}"
-
-      - name: Debug GH_TOKEN_NEW
-        run: echo "GH_TOKEN_NEW=${{ secrets.GH_TOKEN_NEW }}"
-    
-      - name: Debug GH_USER
-        run: echo "GH_USER=${{ secrets.GH_USER }}"
-
-      - name: Debug GITHUB_USER
-        run: echo "GITHUB_USER=${{ secrets.GITHUB_USER }}"
       
       - name: Setup git credentials
         uses: oleksiyrudenko/gha-git-credentials@v2-latest
