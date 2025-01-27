@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_USER_NAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
     steps:
       - name: Validate Branch
@@ -46,14 +47,14 @@ jobs:
         with:
           name: 'reportportal.io'
           email: 'support@reportportal.io'
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ env.GITHUB_TOKEN }}
 
       - name: Build Artifacts
         run: |
           ${{ inputs.gradle_command }} --no-build-cache --exclude-task test \
           -PreleaseMode=true \
           -PgithubUserName=${{env.GH_USER_NAME}} \
-          -PgithubToken=${{ secrets.GH_TOKEN }} \
+          -PgithubToken=${{ env.GITHUB_TOKEN }} \
           -PpublishRepo=${{ inputs.repository_url }}${{ github.repository }} \
           -PgpgPassphrase=${{ secrets.GPG_PASSPHRASE }} \
           -PgpgPrivateKey="${{ secrets.GPG_PRIVATE_KEY }}" \
@@ -78,4 +79,4 @@ jobs:
           asset_name: service-api-${{ inputs.release_version }}.jar
           asset_content_type: application/java-archive
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
