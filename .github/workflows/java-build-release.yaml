@@ -20,7 +20,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      GH_USER_NAME: ${{ github.actor }}
+      GH_USER_NAME: ${{ secrets.GH_USER }}
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
     steps:
