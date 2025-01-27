@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_USER_NAME: ${{ secrets.GH_USER }}
-      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEW }}
 
     steps:
       - name: Validate Branch
