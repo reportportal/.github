@@ -42,24 +42,16 @@ jobs:
         run: chmod +x gradlew
 
       - name: Debug GITHUB_TOKEN
-        run: echo "GITHUB_TOKEN is set"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}"
 
       - name: Debug GH_TOKEN
-        run: echo "GH_TOKEN is set"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: echo "GITHUB_TOKEN=${{ secrets.GH_TOKEN }}"
 
       - name: Debug GH_TOKEN_NEW
-        run: echo "GH_TOKEN_NEW is set"
-        env:
-          GH_TGH_TOKEN_NEWOKEN: ${{ secrets.GH_TOKEN_NEW }}
+        run: echo "GITHUB_TOKEN=${{ secrets.GH_TOKEN_NEW }}"
     
       - name: Debug GH_USER
-        run: echo "GH_USER is set"
-        env:
-          GH_TGH_TOKEN_NEWOKEN: ${{ secrets.GH_USER }}
+        run: echo "GITHUB_TOKEN=${{ secrets.GH_USER }}"
       
       - name: Setup git credentials
         uses: oleksiyrudenko/gha-git-credentials@v2-latest
