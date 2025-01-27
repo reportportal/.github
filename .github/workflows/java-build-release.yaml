@@ -45,27 +45,30 @@ jobs:
         run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}"
 
       - name: Debug GH_TOKEN
-        run: echo "GITHUB_TOKEN=${{ secrets.GH_TOKEN }}"
+        run: echo "GH_TOKEN=${{ secrets.GH_TOKEN }}"
 
       - name: Debug GH_TOKEN_NEW
-        run: echo "GITHUB_TOKEN=${{ secrets.GH_TOKEN_NEW }}"
+        run: echo "GH_TOKEN_NEW=${{ secrets.GH_TOKEN_NEW }}"
     
       - name: Debug GH_USER
-        run: echo "GITHUB_TOKEN=${{ secrets.GH_USER }}"
+        run: echo "GH_USER=${{ secrets.GH_USER }}"
+
+      - name: Debug GITHUB_USER
+        run: echo "GITHUB_USER=${{ secrets.GITHUB_USER }}"
       
       - name: Setup git credentials
         uses: oleksiyrudenko/gha-git-credentials@v2-latest
         with:
           name: 'reportportal.io'
           email: 'support@reportportal.io'
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Artifacts
         run: |
           ${{ inputs.gradle_command }} --no-build-cache --exclude-task test \
           -PreleaseMode=true \
           -PgithubUserName=${{env.GH_USER_NAME}} \
-          -PgithubToken=${{ secrets.GH_TOKEN }} \
+          -PgithubToken=${{ secrets.GITHUB_TOKEN }} \
           -PpublishRepo=${{ inputs.repository_url }}${{ github.repository }} \
           -PgpgPassphrase=${{ secrets.GPG_PASSPHRASE }} \
           -PgpgPrivateKey="${{ secrets.GPG_PRIVATE_KEY }}" \
