@@ -15,9 +15,6 @@ on:
       branch:
         required: true
         type: string
-    secrets:
-      GITHUB_TOKEN:
-        required: true
 
 jobs:
   release:
@@ -43,13 +40,13 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      
+
       - name: Setup git credentials
-        uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        uses: actions/setup-node@v3
         with:
-          name: 'reportportal.io'
-          email: 'support@reportportal.io'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          node-version: 16
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Artifacts
         run: |
