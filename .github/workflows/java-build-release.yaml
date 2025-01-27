@@ -78,4 +78,4 @@ jobs:
           asset_name: service-api-${{ inputs.release_version }}.jar
           asset_content_type: application/java-archive
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: 'test-value-to-print'
