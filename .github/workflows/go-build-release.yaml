@@ -50,7 +50,7 @@ jobs:
           -X ${PACKAGE_COMMONS}/commons.branch=${{ inputs.branch }} \
           -X ${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE} \
           -X ${PACKAGE_COMMONS}/commons.version=${{ inputs.release_version }}" \
-          -o build/service-index-${{ inputs.release_version }} ./
+          -o build/service-index-${{ inputs.release_version }} ./ 
 
       - name: List files in build directory
         run: |
@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Debug Go Build
-          path: build/service-index-*.${{ inputs.release_version }}
+          path: build/service-index-${{ inputs.release_version }}
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
