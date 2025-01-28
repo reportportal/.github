@@ -1,0 +1,74 @@
+name: Go Release Artifact Publisher
+
+on:
+  workflow_call:
+    inputs:
+      release_version:
+        required: true
+        type: string
+      repository_url:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_USER_NAME: ${{ github.actor }}
+
+    steps:
+      - name: Validate Branch
+        if: ${{ github.event_name != 'release' && github.ref != format('refs/heads/{0}', inputs.branch) }}
+        run: |
+          echo "This workflow can only run on the branch '${{ inputs.branch }}'."
+          exit 1
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.22.6
+
+      - name: Set environment variables
+        run: |
+          echo "APP_DIR=/go/src/github.com/org/repo" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+          echo "PACKAGE_COMMONS=github.com/reportportal/commons-go/v5" >> $GITHUB_ENV
+          echo "REPO_NAME=reportportal/service-index" >> $GITHUB_ENV
+
+      - name: Build Artifacts
+        run: |
+          echo "Building Go binary..."
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+          -ldflags "-extldflags '-static' \
+          -X ${PACKAGE_COMMONS}/commons.repo=${REPO_NAME} \
+          -X ${PACKAGE_COMMONS}/commons.branch=${{ inputs.branch }} \
+          -X ${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE} \
+          -X ${PACKAGE_COMMONS}/commons.version=${{ inputs.release_version }}" \
+          -o build/service-index-${{ inputs.release_version }} ./
+
+      - name: List files in build directory
+        run: |
+          echo "Listing files in build directory:"
+          ls -al build/
+
+      - name: Upload Debug Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Debug Go Build
+          path: build/service-index-*.${{ inputs.release_version }}
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: build/service-index-${{ inputs.release_version }}
+          asset_name: service-index-${{ inputs.release_version }}
+          asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
