@@ -43,12 +43,12 @@ jobs:
           echo "PACKAGE_COMMONS=${PACKAGE_COMMONS}"
           echo "REPO_NAME=${REPO_NAME}"
           echo "VERSION=${VERSION}"
-           
+        
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-          -ldflags "-X '${PACKAGE_COMMONS}/commons.repo=${REPO_NAME}' \
-          -X '${PACKAGE_COMMONS}/commons.branch=${{ inputs.branch }}' \
-          -X '${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE}' \
-          -X '${PACKAGE_COMMONS}/commons.version=${VERSION}'" \
+          -ldflags "-X \"${PACKAGE_COMMONS}/commons.repo=${REPO_NAME}\" \
+                  -X \"${PACKAGE_COMMONS}/commons.branch=${{ inputs.branch }}\" \
+                  -X \"${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE}\" \
+                  -X \"${PACKAGE_COMMONS}/commons.version=${VERSION}\"" \
           -o build/${{ inputs.service_name }}-${VERSION} ./
 
       - name: List files in build directory
