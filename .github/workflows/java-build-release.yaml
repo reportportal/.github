@@ -52,7 +52,11 @@ jobs:
           -PgpgPassphrase=${{ secrets.GPG_PASSPHRASE }} \
           -PgpgPrivateKey="${{ secrets.GPG_PRIVATE_KEY }}" \
           -Prelease.releaseVersion=${{ inputs.release_version }}
-
+      - name: List Build Artifacts
+        run: |
+          echo "Listing contents of build/libs/"
+          ls -lh build/libs/
+          
       - name: Find Matching File
         id: find_file
         run: |
