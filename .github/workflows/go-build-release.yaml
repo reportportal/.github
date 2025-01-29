@@ -14,7 +14,7 @@ on:
         type: string
       service_name:
         required: true
-        type: string  # Agregado para aceptar el prefijo dinámico
+        type: string
 
 jobs:
   release:
@@ -29,8 +29,14 @@ jobs:
           echo "This workflow can only run on the branch '${{ inputs.branch }}'."
           exit 1
 
+      - name: Set ref
+        run: |
+            echo "REF=$([[$GITHUB_EVENT_NAME == 'release']] && echo refs/tags/${{ github.event.release.tag_name }} || echo ${{ inputs.branch }})" >> $GITHUB_ENV
+
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+         ref: ${{ env.REF }}
 
       - name: Set up Go
         uses: actions/setup-go@v3
