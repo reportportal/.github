@@ -36,17 +36,20 @@ jobs:
           APP_DIR: "/go/src/github.com/org/repo"
           BUILD_DATE: "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           PACKAGE_COMMONS: "github.com/reportportal/commons-go/v5"
-          REPO_NAME: ${{ github.action_repository }}
+          REPO_NAME: ${{ github.repository }}
           VERSION: ${{ inputs.release_version }}
         run: |
-            echo "Building Go binary..."
-            CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-            -ldflags "-extldflags '-static' \
-            -X ${PACKAGE_COMMONS}/commons.repo=${REPO_NAME} \
-            -X ${PACKAGE_COMMONS}/commons.branch=${{ inputs.branch }} \
-            -X ${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE} \
-            -X ${PACKAGE_COMMONS}/commons.version=${VERSION}" \
-            -o build/${{ inputs.service_name }}-${VERSION} ./
+          echo "Building Go binary..."
+          echo "PACKAGE_COMMONS=${PACKAGE_COMMONS}"
+          echo "REPO_NAME=${REPO_NAME}"
+          echo "VERSION=${VERSION}"
+           
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+          -ldflags "-X '${PACKAGE_COMMONS}/commons.repo=${REPO_NAME}' \
+          -X '${PACKAGE_COMMONS}/commons.branch=${{ inputs.branch }}' \
+          -X '${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE}' \
+          -X '${PACKAGE_COMMONS}/commons.version=${VERSION}'" \
+          -o build/${{ inputs.service_name }}-${VERSION} ./
 
       - name: List files in build directory
         run: |
