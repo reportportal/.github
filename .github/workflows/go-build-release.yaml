@@ -6,7 +6,7 @@ on:
       release_version:
         required: true
         type: string
-      repository_url:
+      go_version:
         required: true
         type: string
       branch:
@@ -23,42 +23,29 @@ jobs:
       GH_USER_NAME: ${{ github.actor }}
 
     steps:
-      - name: Set ref
-        run: |
-            echo "REF=$([[$GITHUB_EVENT_NAME == 'release']] && echo refs/tags/${{ github.event.release.tag_name }} || echo ${{ inputs.branch }})" >> $GITHUB_ENV
-
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-         ref: ${{ env.REF }}
 
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.22.6
-
-      - name: Set environment variables
-        run: |
-          echo "APP_DIR=/go/src/github.com/org/repo" >> $GITHUB_ENV
-          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          echo "PACKAGE_COMMONS=github.com/reportportal/commons-go/v5" >> $GITHUB_ENV
-          echo "REPO_NAME=reportportal/${{ inputs.service_name }}" >> $GITHUB_ENV  # Dinámico
+          go-version: ${{ inputs.go_version }}
 
       - name: Build Artifacts
+        env:
+          APP_DIR: "/go/src/github.com/org/repo"
+          BUILD_DATE: "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          PACKAGE_COMMONS: "github.com/reportportal/commons-go/v5"
+          REPO_NAME: ${{ github.repository }}
+          VERSION: ${{ inputs.release_version }}
         run: |
-          echo "Building Go binary..."
+          echo "Building Go binary..."       
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-          -ldflags "-extldflags '-static' \
-          -X ${PACKAGE_COMMONS}/commons.repo=${REPO_NAME} \
-          -X ${PACKAGE_COMMONS}/commons.branch=${{ inputs.branch }} \
-          -X ${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE} \
-          -X ${PACKAGE_COMMONS}/commons.version=${{ inputs.release_version }}" \
-          -o build/${{ inputs.service_name }}-${{ inputs.release_version }} ./ 
-
-      - name: List files in build directory
-        run: |
-          echo "Listing files in build directory:"
-          ls -al build/
+          -ldflags "-X \"${PACKAGE_COMMONS}/commons.repo=${REPO_NAME}\" \
+                  -X \"${PACKAGE_COMMONS}/commons.branch=${{ inputs.branch }}\" \
+                  -X \"${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE}\" \
+                  -X \"${PACKAGE_COMMONS}/commons.version=${VERSION}\"" \
+          -o build/${{ inputs.service_name }}-${VERSION} ./
 
       - name: Upload Debug Artifact
         uses: actions/upload-artifact@v3
