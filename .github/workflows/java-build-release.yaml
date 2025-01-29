@@ -56,11 +56,11 @@ jobs:
         run: |
           echo "Listing contents of build/libs/"
           ls -lh build/libs/
-          
+
       - name: Find Matching File
         id: find_file
         run: |
-          file=$(ls build/libs/service-*-${{ inputs.release_version }}exec.jar | head -n 1)
+          file=$(ls build/libs/service-*-${{ inputs.release_version }}-exec.jar | head -n 1)
           if [ -z "$file" ]; then
              echo "No matching file found!"
              exit 1
