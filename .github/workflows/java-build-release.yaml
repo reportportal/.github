@@ -6,10 +6,7 @@ on:
       release_version:
         required: true
         type: string
-      repository_url:
-        required: true
-        type: string
-      gradle_command:
+      artifact_upload_url:
         required: true
         type: string
       branch:
@@ -29,11 +26,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up JDK 21
+      - name: Set up JDK ${{ inputs.java_version }}
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: ${{ inputs.gradle_command }}
+          java-version: ${{ inputs.java_version }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -47,11 +44,11 @@ jobs:
 
       - name: Build Artifacts
         run: |
-          ${{ inputs.gradle_command }} --no-build-cache --exclude-task test \
+          ./gradlew build --no-build-cache --exclude-task test \
           -PreleaseMode=true \
           -PgithubUserName=${{env.GH_USER_NAME}} \
           -PgithubToken=${{ secrets.GITHUB_TOKEN }} \
-          -PpublishRepo=${{ inputs.repository_url }}${{ github.repository }} \
+          -PpublishRepo=${{ inputs.artifact_upload_url }}${{ github.repository }} \
           -PgpgPassphrase=${{ secrets.GPG_PASSPHRASE }} \
           -PgpgPrivateKey="${{ secrets.GPG_PRIVATE_KEY }}" \
           -Prelease.releaseVersion=${{ inputs.release_version }}
@@ -59,7 +56,7 @@ jobs:
       - name: Find Matching File
         id: find_file
         run: |
-          file=$(ls build/libs/service-*-${{ inputs.release_version }}.jar | head -n 1)
+          file=$(ls build/libs/service-*-${{ inputs.release_version }}exec.jar | head -n 1)
           if [ -z "$file" ]; then
              echo "No matching file found!"
              exit 1
