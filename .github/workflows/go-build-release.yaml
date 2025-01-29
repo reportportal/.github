@@ -12,6 +12,9 @@ on:
       branch:
         required: true
         type: string
+      service_name:
+        required: true
+        type: string  # Agregado para aceptar el prefijo dinámico
 
 jobs:
   release:
@@ -39,7 +42,7 @@ jobs:
           echo "APP_DIR=/go/src/github.com/org/repo" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
           echo "PACKAGE_COMMONS=github.com/reportportal/commons-go/v5" >> $GITHUB_ENV
-          echo "REPO_NAME=reportportal/service-index" >> $GITHUB_ENV
+          echo "REPO_NAME=reportportal/${{ inputs.service_name }}" >> $GITHUB_ENV  # Dinámico
 
       - name: Build Artifacts
         run: |
@@ -50,7 +53,7 @@ jobs:
           -X ${PACKAGE_COMMONS}/commons.branch=${{ inputs.branch }} \
           -X ${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE} \
           -X ${PACKAGE_COMMONS}/commons.version=${{ inputs.release_version }}" \
-          -o build/service-index-${{ inputs.release_version }} ./ 
+          -o build/${{ inputs.service_name }}-${{ inputs.release_version }} ./ 
 
       - name: List files in build directory
         run: |
@@ -61,14 +64,14 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Debug Go Build
-          path: build/service-index-${{ inputs.release_version }}
+          path: build/${{ inputs.service_name }}-${{ inputs.release_version }}
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: build/service-index-${{ inputs.release_version }}
-          asset_name: service-index-${{ inputs.release_version }}
+          asset_path: build/${{ inputs.service_name }}-${{ inputs.release_version }}
+          asset_name: ${{ inputs.service_name }}-${{ inputs.release_version }}
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
