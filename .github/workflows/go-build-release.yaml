@@ -51,11 +51,6 @@ jobs:
                   -X \"${PACKAGE_COMMONS}/commons.version=${VERSION}\"" \
           -o build/${{ inputs.service_name }}-${VERSION} ./
 
-      - name: List files in build directory
-        run: |
-          echo "Listing files in build directory:"
-          ls -al build/
-
       - name: Upload Debug Artifact
         uses: actions/upload-artifact@v3
         with:

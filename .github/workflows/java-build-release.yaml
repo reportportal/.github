@@ -15,6 +15,9 @@ on:
       branch:
         required: true
         type: string
+      java_version:
+        required: true
+        type: string
 
 jobs:
   release:
@@ -23,20 +26,14 @@ jobs:
       GH_USER_NAME: ${{ github.actor }}
 
     steps:
-      - name: Set ref
-        run: |
-            echo "REF=$([[$GITHUB_EVENT_NAME == 'release']] && echo refs/tags/${{ github.event.release.tag_name }} || echo ${{ inputs.branch }})" >> $GITHUB_ENV
-
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-         ref: ${{ env.REF }}
 
       - name: Set up JDK 21
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: '21'
+          java-version: ${{ inputs.gradle_command }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
