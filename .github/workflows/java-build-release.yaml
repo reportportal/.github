@@ -6,9 +6,6 @@ on:
       artifact_upload_url:
         required: true
         type: string
-      branch:
-        required: true
-        type: string
       java_version:
         required: true
         type: string
