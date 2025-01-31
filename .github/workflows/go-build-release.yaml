@@ -1,0 +1,58 @@
+name: Go Release Artifact Publisher
+
+on:
+  workflow_call:
+    inputs:
+      go_version:
+        required: true
+        type: string
+      service_name:
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_USER_NAME: ${{ github.actor }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ inputs.go_version }}
+
+      - name: Build Artifacts
+        env:
+          APP_DIR: "/go/src/github.com/org/repo"
+          BUILD_DATE: "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          PACKAGE_COMMONS: "github.com/reportportal/commons-go/v5"
+          REPO_NAME: ${{ github.repository }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          echo "Building Go binary..."       
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+          -ldflags "-X \"${PACKAGE_COMMONS}/commons.repo=${REPO_NAME}\" \
+                  -X \"${PACKAGE_COMMONS}/commons.branch=${{ github.ref_name }}\" \
+                  -X \"${PACKAGE_COMMONS}/commons.buildDate=${BUILD_DATE}\" \
+                  -X \"${PACKAGE_COMMONS}/commons.version=${VERSION}\"" \
+          -o build/${{ inputs.service_name }}-${VERSION} ./
+
+      - name: Upload Debug Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Debug Go Build
+          path: build/${{ inputs.service_name }}-${{ github.ref_name }}
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: build/${{ inputs.service_name }}-${{ github.ref_name }}
+          asset_name: ${{ inputs.service_name }}-${{ github.ref_name }}
+          asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

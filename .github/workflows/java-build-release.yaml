@@ -1,0 +1,71 @@
+name: Release Artifact Publisher
+
+on:
+  workflow_call:
+    inputs:
+      artifact_upload_url:
+        required: true
+        type: string
+      java_version:
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_USER_NAME: ${{ github.actor }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK ${{ inputs.java_version }}
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: ${{ inputs.java_version }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Setup git credentials
+        uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          name: 'reportportal.io'
+          email: 'support@reportportal.io'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Artifacts
+        run: |
+          ./gradlew build --no-build-cache --exclude-task test \
+          -PreleaseMode=true \
+          -PgithubUserName=${{env.GH_USER_NAME}} \
+          -PgithubToken=${{ secrets.GITHUB_TOKEN }} \
+          -PpublishRepo=${{ inputs.artifact_upload_url }}${{ github.repository }} \
+          -PgpgPassphrase=${{ secrets.GPG_PASSPHRASE }} \
+          -PgpgPrivateKey="${{ secrets.GPG_PRIVATE_KEY }}" \
+          -Prelease.releaseVersion=${{ github.ref_name }}
+
+      - name: Find Matching File
+        id: find_file
+        run: |
+          file=$(ls build/libs/service-*-${{ github.ref_name }}-exec.jar | head -n 1)
+          if [ -z "$file" ]; then
+             echo "No matching file found!"
+             exit 1
+           fi
+           echo "Found file: $file"
+           filename=$(basename "$file")
+           echo "file_path=$file" >> $GITHUB_ENV
+           echo "file_name=$filename" >> $GITHUB_ENV
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ env.file_path }}
+          asset_name: ${{ env.file_name }}
+          asset_content_type: application/java-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
