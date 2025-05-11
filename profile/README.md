@@ -76,4 +76,4 @@ Available plugins developed by ReportPortal team:
 **Other repositories** stored according to next rules:
 * [`service-*`](https://github.com/orgs/reportportal/repositories?q=service-&type=all) - micro-services which are a part of Application.
 * [`commons-*`](https://github.com/orgs/reportportal/repositories?q=commons-&type=all) - common libraries, models, etc., used by micro-services.
-* [`plugin-*`](https://github.com/orgs/reportportal/repositories?q=plugin-&type=all) - functionality extentions, integrastions, etc for ReportPortal.
+* [`plugin-*`](https://github.com/orgs/reportportal/repositories?q=plugin-&type=all) - functionality extentions, integrations, etc for ReportPortal.
