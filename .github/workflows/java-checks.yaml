@@ -28,6 +28,11 @@ on:
         type: string
         required: false
         default: ''
+      checkstyle-fail-level:
+        description: 'Log level for run failure'
+        type: string
+        required: false
+        default: 'none'
       release-mode:
         description: 'Release mode'
         type: boolean
@@ -104,3 +109,4 @@ jobs:
         reporter: ${{ inputs.checkstyle-reporter }}
         checkstyle_config: ${{ inputs.checkstyle-config }}
         properties_file: ${{ inputs.checkstyle-properties-file }}
+        fail_level: ${{ inputs.checkstyle-fail-level }}
