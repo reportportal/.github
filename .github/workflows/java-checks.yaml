@@ -17,7 +17,7 @@ on:
         description: 'The reporter to use for checkstyle'
         type: string
         required: false
-        default: 'github-pr-review'
+        default: 'github-pr-check'
       checkstyle-config:
         description: 'Checkstyle configuration'
         type: string
