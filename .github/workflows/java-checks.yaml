@@ -18,6 +18,16 @@ on:
         type: string
         required: false
         default: 'github-pr-review'
+      checkstyle-config:
+        description: 'Checkstyle configuration'
+        type: string
+        required: false
+        default: 'google_checks.xml'
+      checkstyle-properties-file:
+        description: 'Checkstyle properties'
+        type: string
+        required: false
+        default: ''
       release-mode:
         description: 'Release mode'
         type: boolean
@@ -78,7 +88,7 @@ jobs:
       run: |
         ./gradlew build -PreleaseMode=${{ inputs.release-mode }}
   
-  reviewdog:
+  checkstyle:
     runs-on: ${{ inputs.runs-on }}
     name: Java Checkstyle
     steps:
@@ -88,8 +98,9 @@ jobs:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
     
     - name: Run checkstyle
-      uses: nikitasavinov/checkstyle-action@master
+      uses: dbelyaev/action-checkstyle@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: ${{ inputs.checkstyle-reporter }}
-        filter_mode: diff_context
+        checkstyle_config: ${{ inputs.checkstyle-config }}
+        properties_file: ${{ inputs.checkstyle-properties-file }}
