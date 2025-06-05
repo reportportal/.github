@@ -64,6 +64,7 @@ Available plugins developed by ReportPortal team:
 * [`plugin-bts-monday`](https://github.com/reportportal/plugin-bts-monday) Monday Plugin. Interaction with Monday.
 * [`plugin-bts-gitlab`](https://github.com/reportportal/plugin-bts-gitlab) Gitlab Plugin. Interaction with Gitlab.
 * [`plugin-slack`](https://github.com/reportportal/plugin-slack/) Slack Plugin. Interaction with Slack.
+* [`plugin-slack`](https://github.com/reportportal/plugin-telegram/) Telegram Plugin. Interaction with Telegram.
 * [`plugin-import-junit`](https://github.com/reportportal/plugin-import-junit) JUnit Import Plugin. Import of Junit test results.
 * [`plugin-import-robot`](https://github.com/reportportal/plugin-import-robot) RobotFramework Import Plugin. Import of Robot Framework test results.
 
