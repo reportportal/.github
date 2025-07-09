@@ -76,6 +76,9 @@ on:
       GH_TOKEN:
         description: 'GitHub token'
         required: false
+      DRILL_API_URL:
+        description: 'Drill4J API URL'
+        required: false
       DRILL_API_KEY:
         description: 'Drill4J API Key'
         required: false
