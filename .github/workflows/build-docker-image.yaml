@@ -58,6 +58,11 @@ on:
         required: false
         type: string
         default: 'ubuntu-latest'
+      drill-send-build-info:
+        description: 'Send build info to Drill4J'
+        required: false
+        type: boolean
+        default: false
     secrets:
       AWS_ACCESS_KEY_ID:
         description: 'AWS Access Key ID'
@@ -71,7 +76,9 @@ on:
       GH_TOKEN:
         description: 'GitHub token'
         required: false
-
+      DRILL4J_API_KEY:
+        description: 'Drill4J API Key'
+        required: false
 env:
   AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ${{ inputs.ecr-repository }} # set this to your Amazon ECR repository name
@@ -154,3 +161,12 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- :gift: Docker image in Amazon ECR: $ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
           echo "- :octocat: The commit SHA from which the build was performed: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Send build info to Drill4J
+        if: ${{ inputs.drill-send-build-info }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRILL4J_API_KEY: ${{ secrets.DRILL4J_API_KEY }}
+          DRILL_BUILD_VERSION: ${{ env.IMAGE_TAG }}
+        run:
+          ./gradlew drillSendBuildInfo
