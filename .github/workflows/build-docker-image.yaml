@@ -76,7 +76,7 @@ on:
       GH_TOKEN:
         description: 'GitHub token'
         required: false
-      DRILL4J_API_KEY:
+      DRILL_API_KEY:
         description: 'Drill4J API Key'
         required: false
 env:
@@ -166,7 +166,7 @@ jobs:
         if: ${{ inputs.drill-send-build-info }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRILL4J_API_KEY: ${{ secrets.DRILL4J_API_KEY }}
+          DRILL_API_KEY: ${{ secrets.DRILL_API_KEY }}
           DRILL_BUILD_VERSION: ${{ env.IMAGE_TAG }}
         run:
           ./gradlew drillSendBuildInfo
