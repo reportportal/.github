@@ -166,6 +166,7 @@ jobs:
         if: ${{ inputs.drill-send-build-info }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRILL_API_URL: ${{ secrets.DRILL_API_URL }}
           DRILL_API_KEY: ${{ secrets.DRILL_API_KEY }}
           DRILL_BUILD_VERSION: ${{ env.IMAGE_TAG }}
         run:
