@@ -12,7 +12,7 @@ jobs:
     uses: reportportal/.github/.github/workflows/aws-oidc-auth.yaml@main
     with:
       role_arn: ${{ secrets.AWS_ROLE_ARN }}
-      aws_region: us-east-1
+      aws_region: eu-central-1
 ```
 
 ## AWS IAM Role Requirements
