@@ -1,7 +1,8 @@
 name: Build Docker image and push to AWS ECR
 
+
 on:
-  workflow_call:
+  workflow_call: 
     inputs:
       aws-region:
         description: 'AWS Region'
@@ -58,13 +59,11 @@ on:
         required: false
         type: string
         default: 'ubuntu-latest'
+      role-arn:
+        description: 'IAM Role ARN to assume via OIDC'
+        required: true
+        type: string
     secrets:
-      AWS_ACCESS_KEY_ID:
-        description: 'AWS Access Key ID'
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        description: 'AWS Secret Access Key'
-        required: true
       GH_USER:
         description: 'GitHub user'
         required: false
@@ -83,10 +82,14 @@ env:
   BRANCH: ${{ inputs.branch }}
   DATE: ${{ inputs.date }}
   RELEASE_MODE: ${{ inputs.release-mode }}
+
 jobs:
   build-and-export:
     name: Build and export to AWS ECR
     runs-on: ${{ inputs.runs-on }}
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -96,9 +99,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          # role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ inputs.role-arn }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -106,10 +107,10 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         with:
           mask-password: 'true'
-      
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -131,7 +132,7 @@ jobs:
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
             ${{ env.ADDITIONAL_TAG != '' && format('{0}/{1}:{2}', env.ECR_REGISTRY, env.ECR_REPOSITORY, env.ADDITIONAL_TAG) || '' }}
-            ${{ env.ADDITIONAL_TAG_2 != '' && format('{0}/{1}:{2}', env.ECR_REGISTRY, env.ECR_REPOSITORY, env.ADDITIONAL_TAG_2) || '' }}
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         if: ${{ inputs.scan-image }}
@@ -144,7 +145,7 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-      
+
       - name: Summarize
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -152,5 +153,5 @@ jobs:
         run: |
           echo "## General information about the build:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- :gift: Docker image in Amazon ECR: $ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
-          echo "- :octocat: The commit SHA from which the build was performed: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)" >> $GITHUB_STEP_SUMMARY
+          echo "- Docker image in Amazon ECR: $ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
+          echo "- The commit SHA from which the build was performed: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)" >> $GITHUB_STEP_SUMMARY
