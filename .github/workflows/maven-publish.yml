@@ -96,7 +96,8 @@ jobs:
       - name: Create deployment bundle
         run: |
           # Get only the downloaded artifact files (filter by artifact name and version)
-          FILES=($(ls ${ARTIFACT}-${VERSION}.*))
+          # Use a more comprehensive pattern to match all artifact files including sources and javadoc
+          FILES=($(ls ${ARTIFACT}-${VERSION}*))
           
           if [ ${#FILES[@]} -eq 0 ]; then
             echo "ERROR: No artifact files found to bundle!" >&2
