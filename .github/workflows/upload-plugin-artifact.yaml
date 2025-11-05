@@ -16,6 +16,9 @@ on:
 permissions:
   id-token: write
   contents: read
+  actions: read
+  packages: none
+
 
 jobs:
   upload:
@@ -46,16 +49,25 @@ jobs:
             s3://${{ env.S3_PLUGIN_BUCKET }}/${{ inputs.plugin_name }}/${{ inputs.branch_name }}/build-${{ inputs.run_number }}/ \
             --recursive --exclude "*" --include "*.jar"
 
-      - name: Delete uploaded artifact
+      - name: Delete uploaded artifact(s)
         if: success()
         env:
-            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            echo "Deleting uploaded artifact from GitHub..."
-            artifact_id=$(gh api repos/${{ github.repository }}/actions/artifacts --jq '.artifacts[] | select(.name=="build-libs") | .id')
-            if [ -n "$artifact_id" ]; then
-            echo "Deleting artifact ID: $artifact_id"
-            gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/$artifact_id
-            else
-            echo "No artifact found to delete."
-            fi
+          echo "Deleting uploaded artifact(s) from GitHub..."
+          artifact_ids=$(gh api repos/${{ github.repository }}/actions/artifacts \
+            --jq '.artifacts[] | select(.name=="build-libs") | .id')
+
+          if [ -z "$artifact_ids" ]; then
+            echo "No artifacts found to delete."
+          else
+            for id in $artifact_ids; do
+              echo "Deleting artifact ID: $id"
+              gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/$id || true
+            done
+            echo "All matching artifacts deleted successfully."
+          fi
+
+      - name: Post Configure AWS credentials (OIDC)
+        if: always()
+        run: echo "Post job cleanup complete."
