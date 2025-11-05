@@ -33,7 +33,12 @@ jobs:
           echo "${ACTIONS_ID_TOKEN_REQUEST_URL}"
           echo "Token length:"
           echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | wc -c
-          
+        
+      - name: Decode OIDC token (debug)
+        run: |
+            echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | \
+            cut -d "." -f2 | base64 -d | jq '.sub'
+
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
