@@ -36,7 +36,7 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-            name: plugin-artifact
+            name: build-libs
             path: build/libs
 
       - name: Upload plugin artifact to S3
@@ -46,8 +46,10 @@ jobs:
             s3://${{ env.S3_PLUGIN_BUCKET }}/${{ inputs.plugin_name }}/${{ inputs.branch_name }}/build-${{ inputs.run_number }}/ \
             --recursive --exclude "*" --include "*.jar"
 
-      - name: Clean up downloaded artifacts
-        if: always()
+      - name: Delete uploaded artifact
+        if: success()
         run: |
-            echo "Cleaning up downloaded artifacts..."
-            rm -rf build/libs || true
+            echo "Deleting uploaded artifact from GitHub..."
+            gh api \
+            -X DELETE \
+            repos/${{ github.repository }}/actions/artifacts/$(gh api repos/${{ github.repository }}/actions/artifacts --jq '.artifacts[] | select(.name=="build-libs") | .id') || true
