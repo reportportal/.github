@@ -13,21 +13,32 @@ on:
         required: true
         type: string
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   upload:
     name: Upload to S3
     runs-on: ubuntu-latest
 
+    env:
+      AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN || secrets.AWS_ROLE_ARN }}
+      S3_PLUGIN_BUCKET: ${{ vars.S3_PLUGIN_BUCKET || secrets.S3_PLUGIN_BUCKET }}
+
     steps:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: eu-central-1
+
+      - name: Verify AWS identity (debug)
+        run: aws sts get-caller-identity
 
       - name: Upload plugin artifact to S3
         run: |
           echo "Uploading artifact for ${{ inputs.plugin_name }}..."
           aws s3 cp build/libs/ \
-            s3://${{ secrets.S3_PLUGIN_BUCKET }}/${{ inputs.plugin_name }}/${{ inputs.branch_name }}/build-${{ inputs.run_number }}/ \
+            s3://${{ env.S3_PLUGIN_BUCKET }}/${{ inputs.plugin_name }}/${{ inputs.branch_name }}/build-${{ inputs.run_number }}/ \
             --recursive --exclude "*" --include "*.jar"
