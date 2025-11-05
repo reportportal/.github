@@ -27,26 +27,17 @@ jobs:
       S3_PLUGIN_BUCKET: ${{ vars.S3_PLUGIN_BUCKET || secrets.S3_PLUGIN_BUCKET }}
 
     steps:
-      - name: Print OIDC subject
-        run: |
-          echo "OIDC subject claim:"
-          echo "${ACTIONS_ID_TOKEN_REQUEST_URL}"
-          echo "Token length:"
-          echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | wc -c
-        
-      - name: Decode OIDC token (debug)
-        run: |
-            echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | \
-            cut -d "." -f2 | base64 -d | jq '.sub'
-
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: eu-central-1
 
-      - name: Verify AWS identity (debug)
-        run: aws sts get-caller-identity
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+            name: plugin-artifact
+            path: build/libs
 
       - name: Upload plugin artifact to S3
         run: |
@@ -54,3 +45,9 @@ jobs:
           aws s3 cp build/libs/ \
             s3://${{ env.S3_PLUGIN_BUCKET }}/${{ inputs.plugin_name }}/${{ inputs.branch_name }}/build-${{ inputs.run_number }}/ \
             --recursive --exclude "*" --include "*.jar"
+
+      - name: Clean up downloaded artifacts
+        if: always()
+        run: |
+            echo "Cleaning up downloaded artifacts..."
+            rm -rf build/libs || true
