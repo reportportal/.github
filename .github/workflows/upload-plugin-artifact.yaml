@@ -27,6 +27,13 @@ jobs:
       S3_PLUGIN_BUCKET: ${{ vars.S3_PLUGIN_BUCKET || secrets.S3_PLUGIN_BUCKET }}
 
     steps:
+      - name: Print OIDC subject
+        run: |
+          echo "OIDC subject claim:"
+          echo "${ACTIONS_ID_TOKEN_REQUEST_URL}"
+          echo "Token length:"
+          echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | wc -c
+          
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
