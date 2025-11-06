@@ -41,14 +41,6 @@ jobs:
           name: build-libs
           path: build/libs
 
-      - name: Debug path values
-        run: |
-          echo "S3 bucket: ${{ env.S3_PLUGIN_BUCKET }}"
-          echo "Region: ${{ env.AWS_REGION }}"
-          echo "Plugin name: ${{ inputs.plugin_name }}"
-          echo "Branch: ${{ inputs.branch_name }}"
-          echo "Run number: ${{ inputs.run_number }}"
-
       - name: Upload plugin artifact to S3
         run: |
           DEST="s3://${{ env.S3_PLUGIN_BUCKET }}/${{ inputs.plugin_name }}/${{ inputs.branch_name }}/build-${{ inputs.run_number }}"
