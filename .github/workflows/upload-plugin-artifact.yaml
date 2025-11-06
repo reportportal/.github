@@ -44,6 +44,5 @@ jobs:
       - name: Upload plugin artifact to S3
         run: |
           echo "Uploading artifact for ${{ inputs.plugin_name }}..."
-          aws s3 cp build/libs/ \
-            s3://${{ env.S3_PLUGIN_BUCKET }}/${{ inputs.plugin_name }}/${{ inputs.branch_name }}/build-${{ inputs.run_number }}/ \
+          aws s3 cp "build/libs" "s3://${{ env.S3_PLUGIN_BUCKET }}/${{ inputs.plugin_name }}/${{ inputs.branch_name }}/build-${{ inputs.run_number }}" \
             --recursive --exclude "*" --include "*.jar"
