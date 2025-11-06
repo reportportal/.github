@@ -26,13 +26,14 @@ jobs:
     env:
       AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN || secrets.AWS_ROLE_ARN }}
       S3_PLUGIN_BUCKET: ${{ vars.S3_PLUGIN_BUCKET || secrets.S3_PLUGIN_BUCKET }}
+      AWS_REGION: ${{ vars.AWS_REGION || secrets.AWS_REGION }}
 
     steps:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
-          aws-region: eu-central-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
