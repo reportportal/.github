@@ -27,6 +27,8 @@ on:
         type: string
         default: rc
 
+  workflow_dispatch:
+
 permissions:
   id-token: write
   contents: read
@@ -38,12 +40,20 @@ jobs:
     runs-on: ubuntu-latest
     environment: rc
 
+
     if: >
-      github.event.review.state == 'approved' &&
-      (github.event.pull_request.base.ref == 'main' ||
-       github.event.pull_request.base.ref == 'master' ||
-       github.event.pull_request.base.ref == 'ci/oidc-test' ||
-       github.event.pull_request.base.ref == 'feature/EPMRPP-110955')
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'approved' &&
+        (
+          github.event.pull_request.base.ref == 'main' ||
+          github.event.pull_request.base.ref == 'master' ||
+          github.event.pull_request.base.ref == 'ci/oidc-test' ||
+          github.event.pull_request.base.ref == 'feature/EPMRPP-110955'
+        )
+      )
+
 
     steps:
       - name: Checkout
