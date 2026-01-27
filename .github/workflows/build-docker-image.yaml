@@ -104,12 +104,12 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        with:
-          mask-password: 'true'
+      #   with:
+      #     mask-password: 'true'
       
-      - name: Mask ECR registry (contains account ID)
-        run: |
-          echo "::add-mask::${{ steps.login-ecr.outputs.registry }}"
+      # - name: Mask ECR registry (contains account ID)
+      #   run: |
+      #     echo "::add-mask::${{ steps.login-ecr.outputs.registry }}"
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
