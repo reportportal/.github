@@ -100,6 +100,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Validate AWS account and region
+        run: |
+          ACCOUNT_ID="$(aws sts get-caller-identity --query 'Account' --output text)"
+          echo "::add-mask::${ACCOUNT_ID}"
+          echo "AWS account: ${ACCOUNT_ID}"
+          echo "AWS region: ${AWS_REGION}"
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -107,12 +114,9 @@ jobs:
         with:
           mask-password: 'true'
       
-      # - name: Mask ECR identifiers
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #   run: |
-      #     echo "::add-mask::${ECR_REGISTRY}"
-      #     echo "::add-mask::${ECR_REPOSITORY}"
+      - name: Mask ECR registry (contains account ID)
+        run: |
+          echo "::add-mask::${{ steps.login-ecr.outputs.registry }}"
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
