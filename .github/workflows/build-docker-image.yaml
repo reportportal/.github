@@ -107,11 +107,12 @@ jobs:
         with:
           mask-password: 'true'
       
-      - name: Mask ECR identifiers
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          echo "::add-mask::${ECR_REGISTRY}"
+      # - name: Mask ECR identifiers
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #   run: |
+      #     echo "::add-mask::${ECR_REGISTRY}"
+      #     echo "::add-mask::${ECR_REPOSITORY}"
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
