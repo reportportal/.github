@@ -101,17 +101,16 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Mask AWS account ID
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "::add-mask::${ACCOUNT_ID}"
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
         with:
           mask-password: 'true'
-
-      - name: Mask AWS account ID
-        run: |
-          ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          ACCOUNT_ID="${ECR_REGISTRY%%.*}"
-          echo "::add-mask::${ACCOUNT_ID}"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2

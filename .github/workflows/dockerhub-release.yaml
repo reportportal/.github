@@ -55,15 +55,14 @@ jobs:
           role-to-assume: ${{ inputs.aws-role-arn }}
           aws-region: ${{ inputs.aws-region }}
 
+      - name: Mask AWS account ID
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "::add-mask::${ACCOUNT_ID}"
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Mask AWS account ID
-        run: |
-          ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          ACCOUNT_ID="${ECR_REGISTRY%%.*}"
-          echo "::add-mask::${ACCOUNT_ID}"
 
       - name: Login to target registry
         uses: docker/login-action@v3
