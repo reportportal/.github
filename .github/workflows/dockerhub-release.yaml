@@ -6,12 +6,6 @@ on:
       aws-region:
         required: true
         type: string
-      aws-role-arn:
-        required: true
-        type: string
-      ecr-repository:
-        required: true
-        type: string
       target-registry:
         required: true
         type: string
@@ -26,7 +20,15 @@ on:
         required: false
         type: string
         default: rc
-     
+    secrets:
+      AWS_ROLE_ARN:
+        required: true
+      ECR_REPOSITORY:
+        required: true
+      REGESTRY_USERNAME:
+        required: true
+      REGESTRY_PASSWORD:
+        required: true
 
 permissions:
   id-token: write
@@ -52,7 +54,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.aws-role-arn }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ inputs.aws-region }}
 
       - name: Mask AWS account ID
@@ -93,7 +95,7 @@ jobs:
           IMAGE_TAG: ${{ steps.vars.outputs.tag }}
         run: |
           docker buildx imagetools create \
-            $ECR_REGISTRY/${{ inputs.ecr-repository }}:latest \
+            $ECR_REGISTRY/${{ secrets.ECR_REPOSITORY }}:latest \
             --tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:$IMAGE_TAG \
             --tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:latest
 
