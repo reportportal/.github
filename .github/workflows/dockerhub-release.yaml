@@ -6,6 +6,10 @@ on:
       aws-region:
         required: true
         type: string
+      ecr-repository:
+        required: true
+        type: string
+        description: ECR repository name
       target-registry:
         required: true
         type: string
@@ -24,7 +28,8 @@ on:
       AWS_ROLE_ARN:
         required: true
       ECR_REPOSITORY:
-        required: true
+        required: false
+        description: Optional; use inputs.ecr-repository instead to pass via vars
       REGESTRY_USERNAME:
         required: true
       REGESTRY_PASSWORD:
@@ -92,10 +97,11 @@ jobs:
       - name: Retag and push image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ inputs.ecr-repository }}
           IMAGE_TAG: ${{ steps.vars.outputs.tag }}
         run: |
           docker buildx imagetools create \
-            $ECR_REGISTRY/${{ secrets.ECR_REPOSITORY }}:latest \
+            $ECR_REGISTRY/$ECR_REPOSITORY:latest \
             --tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:$IMAGE_TAG \
             --tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:latest
 
