@@ -62,13 +62,13 @@ on:
     secrets:
       GH_USER:
         description: 'GitHub user'
-        required: false
+        required: false 
       GH_TOKEN:
         description: 'GitHub token'
-        required: false
+        required: false 
       AWS_ROLE_ARN:
         description: 'AWS Role ARN'
-        required: false
+        required: true  
 
 env:
   AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
