@@ -69,9 +69,6 @@ on:
       GH_TOKEN:
         description: 'GitHub token'
         required: false 
-      AWS_ROLE_ARN:
-        description: 'AWS Role ARN'
-        required: false  
 
 env:
   AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
@@ -84,6 +81,7 @@ env:
   BRANCH: ${{ inputs.branch }}
   DATE: ${{ inputs.date }}
   RELEASE_MODE: ${{ inputs.release-mode }}
+  AWS_ROLE_ARN: ${{ inputs.aws-role-arn }}
 
 jobs:
   build-and-export:
@@ -101,7 +99,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Mask AWS account ID

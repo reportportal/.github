@@ -28,8 +28,6 @@ on:
         type: string
         default: rc
     secrets:
-      AWS_ROLE_ARN:
-        required: false
       ECR_REPOSITORY:
         required: false
         description: Optional; use inputs.ecr-repository instead to pass via vars
@@ -62,7 +60,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-to-assume: ${{ inputs.aws-role-arn }}
           aws-region: ${{ inputs.aws-region }}
 
       - name: Mask AWS account ID
