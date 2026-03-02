@@ -6,6 +6,9 @@ on:
       aws-region:
         required: true
         type: string
+      aws-role-arn:
+        required: false
+        type: string  
       ecr-repository:
         required: true
         type: string
@@ -26,7 +29,7 @@ on:
         default: rc
     secrets:
       AWS_ROLE_ARN:
-        required: true
+        required: false
       ECR_REPOSITORY:
         required: false
         description: Optional; use inputs.ecr-repository instead to pass via vars

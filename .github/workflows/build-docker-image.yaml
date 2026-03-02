@@ -9,6 +9,9 @@ on:
         required: false
         type: string
         default: 'us-east-1'
+      aws-role-arn:
+        required: false
+        type: string  
       ecr-repository:
         description: 'ECR Repository'
         required: false
@@ -68,7 +71,7 @@ on:
         required: false 
       AWS_ROLE_ARN:
         description: 'AWS Role ARN'
-        required: true  
+        required: false  
 
 env:
   AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
