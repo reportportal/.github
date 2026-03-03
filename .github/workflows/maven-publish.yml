@@ -112,7 +112,17 @@ jobs:
           # Create Maven repository structure in temporary directory
           mkdir -p temp_bundle/${PACKAGE_PATH}/${ARTIFACT}/${VERSION}
           cp "${FILES[@]}" temp_bundle/${PACKAGE_PATH}/${ARTIFACT}/${VERSION}/
-          cd temp_bundle
+          cd temp_bundle/${PACKAGE_PATH}/${ARTIFACT}/${VERSION}
+          
+          # Generate .md5 and .sha1 checksums for .pom and .jar (required by Sonatype Central)
+          for f in *.pom *.jar; do
+            if [ -f "$f" ]; then
+              md5sum "$f" | awk '{print $1}' > "$f.md5"
+              sha1sum "$f" | awk '{print $1}' > "$f.sha1"
+              echo "Generated checksums for $f"
+            fi
+          done
+          cd $GITHUB_WORKSPACE/temp_bundle
           
           # Create ZIP with proper Maven repository structure
           zip -r ../${BUNDLE_FILE} .
