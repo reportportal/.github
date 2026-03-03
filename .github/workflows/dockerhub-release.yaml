@@ -28,6 +28,9 @@ on:
         type: string
         default: rc
     secrets:
+      AWS_ROLE_ARN:
+        required: false
+        description: 'IAM role ARN for OIDC authentication'
       ECR_REPOSITORY:
         required: false
         description: Optional; use inputs.ecr-repository instead to pass via vars
@@ -60,7 +63,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.aws-role-arn }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN || inputs.aws-role-arn }}
           aws-region: ${{ inputs.aws-region }}
 
       - name: Mask AWS account ID
@@ -98,7 +101,7 @@ jobs:
       - name: Retag and push image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ inputs.ecr-repository }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY || inputs.ecr-repository }}
           IMAGE_TAG: ${{ steps.vars.outputs.tag }}
         run: |
           docker buildx imagetools create \

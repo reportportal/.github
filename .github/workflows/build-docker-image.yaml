@@ -63,6 +63,9 @@ on:
       AWS_ROLE_ARN:
         description: 'IAM role ARN for OIDC authentication'
         required: false
+      ECR_REPOSITORY:
+        required: false
+        description: 'Amazon ECR repository name'
       GH_USER:
         description: 'GitHub user'
         required: false 
@@ -72,7 +75,7 @@ on:
 
 env:
   AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: ${{ inputs.ecr-repository }} # set this to your Amazon ECR repository name
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY || inputs.ecr-repository }} # set this to your Amazon ECR repository name
   PLATFORMS: ${{ inputs.build-platforms }}     # set target build platforms. By default, linux/amd64
   IMAGE_TAG: ${{ inputs.image-tag }}
   ADDITIONAL_TAG: ${{ inputs.additional-tag }}
