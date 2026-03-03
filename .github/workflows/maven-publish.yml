@@ -44,6 +44,7 @@ env:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 150
     
     steps:
       - name: Checkout code
@@ -112,17 +113,7 @@ jobs:
           # Create Maven repository structure in temporary directory
           mkdir -p temp_bundle/${PACKAGE_PATH}/${ARTIFACT}/${VERSION}
           cp "${FILES[@]}" temp_bundle/${PACKAGE_PATH}/${ARTIFACT}/${VERSION}/
-          cd temp_bundle/${PACKAGE_PATH}/${ARTIFACT}/${VERSION}
-          
-          # Generate .md5 and .sha1 checksums for .pom and .jar (required by Sonatype Central)
-          for f in *.pom *.jar; do
-            if [ -f "$f" ]; then
-              md5sum "$f" | awk '{print $1}' > "$f.md5"
-              sha1sum "$f" | awk '{print $1}' > "$f.sha1"
-              echo "Generated checksums for $f"
-            fi
-          done
-          cd $GITHUB_WORKSPACE/temp_bundle
+          cd temp_bundle
           
           # Create ZIP with proper Maven repository structure
           zip -r ../${BUNDLE_FILE} .
@@ -149,7 +140,7 @@ jobs:
             -X POST \
             -H "Authorization: Bearer $AUTH_TOKEN" \
             --form "bundle=@${BUNDLE_FILE}" \
-            --form "publishingType=USER_MANAGED" \
+            --form "publishingType=AUTOMATIC" \
             "$SONATYPE_CENTRAL_API/upload")
           
           # Extract HTTP status code and response body
@@ -180,73 +171,61 @@ jobs:
 
       - name: Monitor deployment status
         run: |
-          MAX_ATTEMPTS=30
-          SLEEP_TIME=30
-          
+          # Poll every 60s for up to 2 hours (120 attempts × 60s = 7200s)
+          MAX_ATTEMPTS=120
+          SLEEP_TIME=60
+
           for attempt in $(seq 1 $MAX_ATTEMPTS); do
+            echo "Attempt $attempt/$MAX_ATTEMPTS — checking deployment status..."
+
             STATUS_RESPONSE=$(curl -s -w "\n%{http_code}" \
               -X POST \
               -H "Authorization: Bearer $AUTH_TOKEN" \
               -H "Content-Type: application/json" \
               "$SONATYPE_CENTRAL_API/status?id=$DEPLOYMENT_ID")
-            
+
             STATUS_CODE=$(echo "$STATUS_RESPONSE" | tail -n1)
             STATUS_BODY=$(echo "$STATUS_RESPONSE" | head -n -1)
-            
+
             if [ "$STATUS_CODE" -ne 200 ]; then
               echo "ERROR: Failed to get status. HTTP status: $STATUS_CODE" >&2
               echo "Response: $STATUS_BODY" >&2
               exit 1
             fi
-            
+
             DEPLOYMENT_STATE=$(echo "$STATUS_BODY" | jq -r '.deploymentState // empty')
-            
-              case "$DEPLOYMENT_STATE" in
-                "PUBLISHED")
-                  echo "✅ Deployment successfully published to Maven Central!"
-                  echo "$STATUS_BODY" | jq -r '.purls[]?' | while read purl; do
-                    echo "Published package: $purl"
-                  done
-                  exit 0
-                  ;;
-                "FAILED")
-                  echo "❌ Deployment failed!"
-                  echo "$STATUS_BODY" | jq -r '.errors[]?' | while read error; do
-                    echo "Error: $error"
-                  done
-                  exit 1
-                  ;;
-                "VALIDATED")
-                  # Publish the deployment using the API
-                  PUBLISH_RESPONSE=$(curl -s -w "\n%{http_code}" \
-                    -X POST \
-                    -H "Authorization: Bearer $AUTH_TOKEN" \
-                    "$SONATYPE_CENTRAL_API/deployment/$DEPLOYMENT_ID")
-                  
-                  PUBLISH_STATUS=$(echo "$PUBLISH_RESPONSE" | tail -n1)
-                  PUBLISH_BODY=$(echo "$PUBLISH_RESPONSE" | head -n -1)
-                  
-                  if [ "$PUBLISH_STATUS" -ne 204 ]; then
-                    echo "❌ Failed to publish deployment. HTTP status: $PUBLISH_STATUS" >&2
-                    echo "Response: $PUBLISH_BODY" >&2
-                    exit 1
-                  fi
-                  ;;
-                "PENDING"|"VALIDATING"|"PUBLISHING")
-                  if [ $attempt -lt $MAX_ATTEMPTS ]; then
-                    sleep $SLEEP_TIME
-                  fi
-                  ;;
-                *)
-                  echo "❓ Unknown deployment state: $DEPLOYMENT_STATE"
-                  echo "Full response: $STATUS_BODY"
-                  exit 1
-                  ;;
-              esac
-            done
-            
-            echo "❌ Timeout waiting for deployment to complete after $MAX_ATTEMPTS attempts"
-            exit 1
+            echo "Deployment state: $DEPLOYMENT_STATE"
+
+            case "$DEPLOYMENT_STATE" in
+              "PUBLISHED")
+                echo "Deployment successfully published to Maven Central!"
+                echo "$STATUS_BODY" | jq -r '.purls[]?' | while read purl; do
+                  echo "Published package: $purl"
+                done
+                exit 0
+                ;;
+              "FAILED")
+                echo "Deployment failed!" >&2
+                echo "$STATUS_BODY" | jq -r '.errors[]?' | while read error; do
+                  echo "Error: $error" >&2
+                done
+                exit 1
+                ;;
+              "PENDING"|"VALIDATING"|"VALIDATED"|"PUBLISHING")
+                if [ $attempt -lt $MAX_ATTEMPTS ]; then
+                  sleep $SLEEP_TIME
+                fi
+                ;;
+              *)
+                echo "Unknown deployment state: $DEPLOYMENT_STATE" >&2
+                echo "Full response: $STATUS_BODY" >&2
+                exit 1
+                ;;
+            esac
+          done
+
+          echo "Timeout: deployment did not complete after $MAX_ATTEMPTS attempts (~$((MAX_ATTEMPTS * SLEEP_TIME / 60)) minutes)" >&2
+          exit 1
 
       - name: Success notification
         if: success()
