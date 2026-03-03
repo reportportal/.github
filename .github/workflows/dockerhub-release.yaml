@@ -34,10 +34,18 @@ on:
       ECR_REPOSITORY:
         required: false
         description: Optional; use inputs.ecr-repository instead to pass via vars
+      REGISTRY_USERNAME:
+        required: false
+        description: 'Target registry username (preferred); REGESTRY_USERNAME accepted for backward compatibility)'
+      REGISTRY_PASSWORD:
+        required: false
+        description: 'Target registry password (preferred); REGESTRY_PASSWORD accepted for backward compatibility)'
       REGESTRY_USERNAME:
-        required: true
+        required: false
+        description: 'Deprecated: use REGISTRY_USERNAME instead'
       REGESTRY_PASSWORD:
-        required: true
+        required: false
+        description: 'Deprecated: use REGISTRY_PASSWORD instead'
 
 permissions:
   id-token: write
@@ -79,8 +87,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ inputs.target-registry }}
-          username: ${{ secrets.REGESTRY_USERNAME }}
-          password: ${{ secrets.REGESTRY_PASSWORD }}
+          username: ${{ secrets.REGISTRY_USERNAME || secrets.REGESTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD || secrets.REGESTRY_PASSWORD }}
 
       - name: Extract version tag from PR title
         id: vars
