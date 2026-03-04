@@ -99,7 +99,6 @@ jobs:
     permissions:
       contents: read
       checks: write
-      pull-requests: write
     steps:
     - name: Checkout
       uses: actions/checkout@v6
