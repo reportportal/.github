@@ -105,7 +105,7 @@ jobs:
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
     - name: Run checkstyle
-      uses: dbelyaev/action-checkstyle@3.8.1
+      uses: dbelyaev/action-checkstyle@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: ${{ inputs.checkstyle-reporter }}
