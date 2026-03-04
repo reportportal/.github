@@ -68,7 +68,7 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         submodules: true
 
@@ -96,12 +96,15 @@ jobs:
   checkstyle:
     runs-on: ${{ inputs.runs-on }}
     name: Java Checkstyle
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-    
     - name: Run checkstyle
       uses: dbelyaev/action-checkstyle@master
       with:
