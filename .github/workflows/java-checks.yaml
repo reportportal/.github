@@ -107,7 +107,7 @@ jobs:
     - name: Fix .git permissions for Docker
       run: chmod -R a+rwX .git/
     - name: Run checkstyle
-      uses: dbelyaev/action-checkstyle@v3.8.1
+      uses: dbelyaev/action-checkstyle@v3.8.2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: ${{ inputs.checkstyle-reporter }}
