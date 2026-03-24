@@ -16,6 +16,11 @@ name: Release
 
 on:
   workflow_call:
+    secrets:
+      GPG_PASSPHRASE:
+        required: true
+      GPG_PRIVATE_KEY:
+        required: true
 
 env:
   VERSION_FILE: gradle.properties

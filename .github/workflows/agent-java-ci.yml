@@ -16,6 +16,9 @@ name: CI Build
 
 on:
   workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: false
 
 jobs:
   build:
