@@ -16,6 +16,11 @@ name: CI Build
 
 on:
   workflow_call:
+    inputs:
+      java-version:
+        type: string
+        required: false
+        default: '11'
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -28,11 +33,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 11
+      - name: Set up JDK ${{ inputs.java-version }}
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: ${{ inputs.java-version }}
 
       - name: Build with Gradle
         run: ./gradlew build
