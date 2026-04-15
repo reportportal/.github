@@ -29,8 +29,8 @@ on:
       AWS_ROLE_ARN:
         description: 'IAM role ARN (OIDC) used to authenticate to ECR'
         required: true
-      GCR_TOKEN:
-        description: 'GCP access token stored in the secure environment for Artifact Registry push'
+      GCR_SA_KEY:
+        description: 'GCP service account JSON key for Artifact Registry push'
         required: true
 
 jobs:
@@ -70,8 +70,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ inputs.gcr-region }}
-          username: oauth2accesstoken
-          password: ${{ secrets.GCR_TOKEN }}
+          username: _json_key
+          password: ${{ secrets.GCR_SA_KEY }}
 
       # ── Image promotion (retag only, no rebuild) ──────────────────────────
       - name: Set up Docker Buildx
