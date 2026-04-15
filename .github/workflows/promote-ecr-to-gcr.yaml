@@ -13,7 +13,7 @@ on:
         type: string
         default: 'europe-docker.pkg.dev'
       image-tag:
-        description: 'Destination image tag to apply in GCP Artifact Registry (e.g. 5.15.5-r1)'
+        description: 'Destination image tag in GCP Artifact Registry (e.g. 5.15.5-r1)'
         required: true
         type: string
       aws-region:
@@ -21,18 +21,16 @@ on:
         required: false
         type: string
         default: 'us-east-1'
+      gcp-project:
+        description: 'GCP project ID that owns the Artifact Registry repository'
+        required: true
+        type: string
     secrets:
       AWS_ROLE_ARN:
         description: 'IAM role ARN (OIDC) used to authenticate to ECR'
         required: true
-      GCP_WORKLOAD_IDENTITY_PROVIDER:
-        description: 'Full resource name of the GCP Workload Identity Federation provider'
-        required: true
-      GCP_SERVICE_ACCOUNT:
-        description: 'GCP service account email authorised to push to Artifact Registry'
-        required: true
-      GCP_PROJECT:
-        description: 'GCP project ID that owns the Artifact Registry repository'
+      GCR_TOKEN:
+        description: 'GCP access token stored in the secure environment for Artifact Registry push'
         required: true
 
 jobs:
@@ -41,11 +39,11 @@ jobs:
       ${{ inputs.service }}:secure-latest →
       ${{ inputs.gcr-region }}/<project>/reportportal/${{ inputs.service }}:${{ inputs.image-tag }}
     runs-on: ubuntu-latest
-    # All steps run inside the 'secure' environment so that environment-scoped
-    # secrets and protection rules are enforced for both cloud providers.
+    # Both ECR and GCR steps run inside the 'secure' environment so that
+    # environment-scoped secrets and protection rules are enforced.
     environment: secure
     permissions:
-      id-token: write   # Required for OIDC auth (AWS & GCP)
+      id-token: write   # Required for AWS OIDC
       contents: read
 
     steps:
@@ -68,55 +66,34 @@ jobs:
           mask-password: 'true'
 
       # ── GCP / Artifact Registry authentication ────────────────────────────
-      - name: Authenticate to GCP (Workload Identity Federation)
-        id: auth-gcp
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-          token_format: 'access_token'
-
       - name: Login to GCP Artifact Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ inputs.gcr-region }}
           username: oauth2accesstoken
-          password: ${{ steps.auth-gcp.outputs.access_token }}
+          password: ${{ secrets.GCR_TOKEN }}
 
-      # ── Image promotion (no rebuild) ──────────────────────────────────────
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-
+      # ── Image promotion (retag only, no rebuild) ──────────────────────────
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
       - name: Promote image (ECR → GCP Artifact Registry)
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
         run: |
-          SOURCE="${ECR_REGISTRY}/${{ inputs.service }}:secure-latest"
-          TARGET="${{ inputs.gcr-region }}/${GCP_PROJECT}/reportportal/${{ inputs.service }}:${{ inputs.image-tag }}"
-
-          echo "Source : ${SOURCE}"
-          echo "Target : ${TARGET}"
-
           docker buildx imagetools create \
-            "${SOURCE}" \
-            --tag "${TARGET}"
+            "${ECR_REGISTRY}/${{ inputs.service }}:secure-latest" \
+            --tag "${{ inputs.gcr-region }}/${{ inputs.gcp-project }}/reportportal/${{ inputs.service }}:${{ inputs.image-tag }}"
 
       # ── Job summary ───────────────────────────────────────────────────────
       - name: Summarize
         if: always()
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
         run: |
           echo "## Image Promotion Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "| | Image |" >> "$GITHUB_STEP_SUMMARY"
           echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
           echo "| **Source (ECR)** | \`${ECR_REGISTRY}/${{ inputs.service }}:secure-latest\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Target (GCR)** | \`${{ inputs.gcr-region }}/${GCP_PROJECT}/reportportal/${{ inputs.service }}:${{ inputs.image-tag }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Triggered by PR: [${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "| **Target (GCR)** | \`${{ inputs.gcr-region }}/${{ inputs.gcp-project }}/reportportal/${{ inputs.service }}:${{ inputs.image-tag }}\` |" >> "$GITHUB_STEP_SUMMARY"
