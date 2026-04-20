@@ -61,7 +61,8 @@ jobs:
     if: >
       github.event.review.state == 'approved' &&
       (github.event.pull_request.base.ref == 'main' ||
-       github.event.pull_request.base.ref == 'master')
+       github.event.pull_request.base.ref == 'master') &&
+      !contains(github.event.pull_request.head.ref, '-rc')
     
 
     steps:
