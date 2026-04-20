@@ -22,9 +22,10 @@ on:
         type: string
         default: 'us-east-1'
       gcp-project:
-        description: 'GCP project ID that owns the Artifact Registry repository'
-        required: true
+        description: 'GCP project ID that owns the Artifact Registry repository (optional if secret GCP_PROJECT is set)'
+        required: false
         type: string
+        default: ''
     secrets:
       AWS_ROLE_ARN:
         description: 'IAM role ARN (OIDC) used to authenticate to ECR'
@@ -32,24 +33,39 @@ on:
       GCR_SA_KEY:
         description: 'GCP service account JSON key for Artifact Registry push'
         required: true
+      GCR_REGION:
+        description: 'GCP Artifact Registry hostname; takes precedence over the gcr-region input'
+        required: false
+      GCP_PROJECT:
+        description: 'GCP project ID; takes precedence over the gcp-project input'
+        required: false
 
 jobs:
   promote:
-    name: >-
-      ${{ inputs.service }}:secure-latest →
-      ${{ inputs.gcr-region }}/<project>/reportportal/${{ inputs.service }}:${{ inputs.image-tag }}
+    name: Promote ${{ inputs.service }} to GCP Artifact Registry
     runs-on: ubuntu-latest
-    # Both ECR and GCR steps run inside the 'secure' environment so that
-    # environment-scoped secrets and protection rules are enforced.
     environment: secure
     permissions:
-      id-token: write   # Required for AWS OIDC
+      id-token: write
       contents: read
+    env:
+      GCR_REGION: ${{ secrets.GCR_REGION || inputs.gcr-region }}
+      GCP_PROJECT: ${{ secrets.GCP_PROJECT || inputs.gcp-project }}
 
     steps:
-      # ── AWS / ECR authentication ──────────────────────────────────────────
+      - name: Validate configuration
+        run: |
+          if [ -z "${GCR_REGION}" ]; then
+            echo "::error::GCR region is empty. Set secret GCR_REGION (e.g. 'europe-docker.pkg.dev') or pass 'gcr-region' input."
+            exit 1
+          fi
+          if [ -z "${GCP_PROJECT}" ]; then
+            echo "::error::GCP project is empty. Set secret GCP_PROJECT or pass 'gcp-project' input."
+            exit 1
+          fi
+
       - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ inputs.aws-region }}
@@ -65,35 +81,20 @@ jobs:
         with:
           mask-password: 'true'
 
-      # ── GCP / Artifact Registry authentication ────────────────────────────
       - name: Login to GCP Artifact Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
-          registry: ${{ inputs.gcr-region }}
+          registry: ${{ env.GCR_REGION }}
           username: _json_key
           password: ${{ secrets.GCR_SA_KEY }}
 
-      # ── Image promotion (retag only, no rebuild) ──────────────────────────
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Promote image (ECR → GCP Artifact Registry)
+      - name: Promote image (ECR -> GCP Artifact Registry)
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker buildx imagetools create \
             "${ECR_REGISTRY}/${{ inputs.service }}:secure-latest" \
-            --tag "${{ inputs.gcr-region }}/${{ inputs.gcp-project }}/reportportal/${{ inputs.service }}:${{ inputs.image-tag }}"
-
-      # ── Job summary ───────────────────────────────────────────────────────
-      - name: Summarize
-        if: always()
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          echo "## Image Promotion Summary" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| | Image |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Source (ECR)** | \`${ECR_REGISTRY}/${{ inputs.service }}:secure-latest\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Target (GCR)** | \`${{ inputs.gcr-region }}/${{ inputs.gcp-project }}/reportportal/${{ inputs.service }}:${{ inputs.image-tag }}\` |" >> "$GITHUB_STEP_SUMMARY"
+            --tag "${GCR_REGION}/${GCP_PROJECT}/reportportal/${{ inputs.service }}:${{ inputs.image-tag }}"
