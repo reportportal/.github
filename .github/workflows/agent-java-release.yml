@@ -16,6 +16,11 @@ name: Release
 
 on:
   workflow_call:
+    inputs:
+      java-version:
+        type: string
+        required: false
+        default: '11'
     secrets:
       GPG_PASSPHRASE:
         required: true
@@ -46,11 +51,11 @@ jobs:
           version-file: ${{ env.VERSION_FILE }}
           version-file-extraction-pattern: ${{ env.VERSION_EXTRACT_PATTERN }}
 
-      - name: Set up JDK 11
+      - name: Set up JDK ${{ inputs.java-version }}
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: ${{ inputs.java-version }}
 
       - name: Setup git credentials
         uses: oleksiyrudenko/gha-git-credentials@v2-latest
