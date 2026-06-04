@@ -72,12 +72,12 @@ on:
       GH_TOKEN:
         description: 'GitHub token'
         required: false
-      DHI_USERNAME:
-        description: 'Docker username for dhi.io'
+      DOCKERHUB_USERNAME:
+        description: 'Docker Hub username for dhi.io'
         required: false
-      DHI_TOKEN:
-        description: 'Docker PAT/OAT for dhi.io'
-        required: false  
+      DOCKERHUB_TOKEN:
+        description: 'Docker Hub password/PAT for dhi.io'
+        required: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
