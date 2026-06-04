@@ -75,7 +75,7 @@ on:
       DOCKERHUB_USERNAME:
         description: 'Docker Hub username for dhi.io'
         required: false
-      DOCKERHUB_TOKEN:
+      DOCKERHUB_PASSWORD:
         description: 'Docker Hub password/PAT for dhi.io'
         required: false
 
@@ -134,7 +134,7 @@ jobs:
         with:
           registry: dhi.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Compute image tags
         id: tags
