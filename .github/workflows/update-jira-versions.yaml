@@ -21,14 +21,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Pull Request Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: '0'
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.11
+          python-version: 3.13
       - name: Install dependencies
         run: pip install -r https://raw.githubusercontent.com/reportportal/jira-versions-sync/main/requirements.txt
       - name: Update Jira Issues
