@@ -59,3 +59,8 @@ Ensure that the GitHub OIDC identity provider has been added in the AWS account 
 
 Official AWS guide:  
 https://aws.amazon.com/blogs/security/use-iam-roles-to-connect-github-actions-to-actions-in-aws/
+
+## Docker builds (ECR and GCP Artifact Registry)
+
+For pushing container images to Amazon ECR and/or GCP Artifact Registry from the shared
+`build-docker-image.yaml` workflow, see [`docker-build-usage.md`](./docker-build-usage.md).
