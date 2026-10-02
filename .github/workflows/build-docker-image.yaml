@@ -238,7 +238,9 @@ jobs:
               TAGS="${TAGS}"$'\n'"${prefix}:${IMAGE_TAG}"
             fi
             while IFS= read -r tag; do
-              [ -n "${tag}" ] && TAGS="${TAGS}"$'\n'"${prefix}:${tag}"
+              if [ -n "${tag}" ]; then
+                TAGS="${TAGS}"$'\n'"${prefix}:${tag}"
+              fi
             done <<< "${ADDITIONAL_TAGS}"
           }
 
