@@ -35,6 +35,11 @@ on:
         type: string
         required: false
         default: 'build/libs'
+      properties_file:
+        description: 'gradle.properties that holds the plugin version (for multi-module repos, the module file)'
+        type: string
+        required: false
+        default: 'gradle.properties'
       java_version:
         description: 'The version of Java to use'
         type: string
@@ -65,8 +70,9 @@ jobs:
         env:
           CHANNEL: ${{ inputs.channel }}
           RUN_NUMBER: ${{ github.run_number }}
+          PROPERTIES_FILE: ${{ inputs.properties_file }}
         run: |
-          BASE=$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' gradle.properties | tr -d '[:space:]')
+          BASE=$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' "${PROPERTIES_FILE}" | tr -d '[:space:]')
           # gradle.properties may carry its own suffix (6.0.1-develop); the channel replaces it
           CORE="${BASE%%-*}"
           if [[ ! "$CORE" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
