@@ -1,0 +1,160 @@
+name: Publish Plugin to Marketplace
+
+# Builds the plugin as <gradle version>-<channel>.<run number> (e.g. 6.0.0-dev.123)
+# and publishes it to the marketplace registry with a GitHub OIDC token.
+#
+# The plugin build must put marketplace-manifest.json at the root of exactly one jar
+# in libs_dir; that jar is the one published. The registry maps the calling repository
+# to a plugin id (PUBLISH_OIDC_ALLOWED_SOURCES), so the repository has to be on that
+# allow-list.
+
+on:
+  workflow_call:
+    inputs:
+      registry_url:
+        description: 'Marketplace registry base URL'
+        type: string
+        required: true
+      audience:
+        description: 'OIDC audience; must equal the registry PUBLISH_OIDC_AUDIENCE'
+        type: string
+        required: false
+        default: 'marketplace.reportportal.io'
+      channel:
+        description: 'Prerelease identifier appended to the Gradle version'
+        type: string
+        required: false
+        default: 'dev'
+      gradle_tasks:
+        description: 'Gradle tasks that build the plugin jar'
+        type: string
+        required: false
+        default: 'assemble'
+      libs_dir:
+        description: 'Directory the plugin jar is built into'
+        type: string
+        required: false
+        default: 'build/libs'
+      properties_file:
+        description: 'gradle.properties that holds the plugin version (for multi-module repos, the module file)'
+        type: string
+        required: false
+        default: 'gradle.properties'
+      java_version:
+        description: 'The version of Java to use'
+        type: string
+        required: false
+        default: '25'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    name: Publish to Marketplace
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ inputs.java_version }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ inputs.java_version }}
+
+      - name: Resolve version
+        id: version
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          RUN_NUMBER: ${{ github.run_number }}
+          PROPERTIES_FILE: ${{ inputs.properties_file }}
+        run: |
+          BASE=$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' "${PROPERTIES_FILE}" | tr -d '[:space:]')
+          # gradle.properties may carry its own suffix (6.0.1-develop); the channel replaces it
+          CORE="${BASE%%-*}"
+          if [[ ! "$CORE" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::gradle.properties version '${BASE}' does not start with MAJOR.MINOR.PATCH"
+            exit 1
+          fi
+          if [[ ! "$CHANNEL" =~ ^[0-9A-Za-z-]+$ ]]; then
+            echo "::error::channel '${CHANNEL}' is not a SemVer prerelease identifier"
+            exit 1
+          fi
+          echo "value=${CORE}-${CHANNEL}.${RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      - name: Build plugin
+        env:
+          GRADLE_TASKS: ${{ inputs.gradle_tasks }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          chmod +x gradlew
+          ./gradlew ${GRADLE_TASKS} -Pversion="${VERSION}" --stacktrace
+
+      - name: Locate plugin jar
+        id: jar
+        env:
+          LIBS_DIR: ${{ inputs.libs_dir }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          shopt -s nullglob
+          JARS=()
+          for j in "${LIBS_DIR}"/*.jar; do
+            if unzip -l "$j" marketplace-manifest.json > /dev/null 2>&1; then
+              JARS+=("$j")
+            fi
+          done
+          if [[ ${#JARS[@]} -ne 1 ]]; then
+            echo "::error::expected one jar with marketplace-manifest.json in ${LIBS_DIR}, found ${#JARS[@]}: ${JARS[*]}"
+            ls -la "${LIBS_DIR}" || true
+            exit 1
+          fi
+          JAR="${JARS[0]}"
+          ID=$(unzip -p "$JAR" marketplace-manifest.json | jq -r '.id')
+          MANIFEST_VERSION=$(unzip -p "$JAR" marketplace-manifest.json | jq -r '.version')
+          if [[ "$MANIFEST_VERSION" != "$VERSION" ]]; then
+            echo "::error::${JAR} manifest version is '${MANIFEST_VERSION}', expected '${VERSION}'"
+            exit 1
+          fi
+          echo "path=${JAR}" >> "$GITHUB_OUTPUT"
+          echo "plugin_id=${ID}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish
+        env:
+          REGISTRY_URL: ${{ inputs.registry_url }}
+          AUDIENCE: ${{ inputs.audience }}
+          JAR: ${{ steps.jar.outputs.path }}
+          PLUGIN_ID: ${{ steps.jar.outputs.plugin_id }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          TOKEN=$(curl -sSf -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${AUDIENCE}" | jq -r '.value')
+          echo "::add-mask::${TOKEN}"
+
+          ARGS=(-F "jar=@${JAR}")
+          if [[ -f CHANGELOG.md ]]; then
+            ARGS+=(-F "changelog=@CHANGELOG.md")
+          fi
+
+          URL="${REGISTRY_URL%/}/api/v1/plugins/${PLUGIN_ID}/versions"
+          echo "Publishing ${PLUGIN_ID} ${VERSION} to ${URL}"
+          HTTP=$(curl -sS -o response.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${TOKEN}" \
+            "${ARGS[@]}" \
+            "${URL}")
+          echo "HTTP ${HTTP}"
+          cat response.json
+          echo
+          if [[ "$HTTP" != "201" ]]; then
+            echo "::error::registry answered HTTP ${HTTP}"
+            exit 1
+          fi
+
+          {
+            echo "### Published to marketplace"
+            echo "| Plugin | Version | Registry |"
+            echo "|---|---|---|"
+            echo "| \`${PLUGIN_ID}\` | \`${VERSION}\` | ${REGISTRY_URL} |"
+          } >> "$GITHUB_STEP_SUMMARY"
