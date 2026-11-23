@@ -12,9 +12,10 @@ on:
   workflow_call:
     inputs:
       registry_url:
-        description: 'Marketplace registry base URL'
+        description: 'Marketplace registry base URL; when empty, the MARKETPLACE_REGISTRY_URL variable is used, falling back to the dev registry'
         type: string
-        required: true
+        required: false
+        default: ''
       audience:
         description: 'OIDC audience; must equal the registry PUBLISH_OIDC_AUDIENCE'
         type: string
@@ -123,7 +124,7 @@ jobs:
 
       - name: Publish
         env:
-          REGISTRY_URL: ${{ inputs.registry_url }}
+          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_REGISTRY_URL || 'https://dev.marketplace.reportportal.io' }}
           AUDIENCE: ${{ inputs.audience }}
           JAR: ${{ steps.jar.outputs.path }}
           PLUGIN_ID: ${{ steps.jar.outputs.plugin_id }}
