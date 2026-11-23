@@ -12,7 +12,7 @@ on:
   workflow_call:
     inputs:
       registry_url:
-        description: 'Marketplace registry base URL; when empty, the MARKETPLACE_REGISTRY_URL variable is used, falling back to the dev registry'
+        description: 'Marketplace registry base URL; when empty, the MARKETPLACE_REGISTRY_URL organization variable is used'
         type: string
         required: false
         default: ''
@@ -57,6 +57,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check marketplace registry URL
+        env:
+          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_REGISTRY_URL }}
+        run: |
+          if [[ -z "${REGISTRY_URL}" ]]; then
+            echo "::error::Set the MARKETPLACE_REGISTRY_URL organization variable (for dev: https://dev.marketplace.reportportal.io) or pass registry_url"
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v7
 
@@ -124,7 +133,7 @@ jobs:
 
       - name: Publish
         env:
-          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_REGISTRY_URL || 'https://dev.marketplace.reportportal.io' }}
+          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_REGISTRY_URL }}
           AUDIENCE: ${{ inputs.audience }}
           JAR: ${{ steps.jar.outputs.path }}
           PLUGIN_ID: ${{ steps.jar.outputs.plugin_id }}
