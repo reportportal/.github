@@ -12,7 +12,7 @@ on:
   workflow_call:
     inputs:
       registry_url:
-        description: 'Marketplace registry base URL; when empty, the MARKETPLACE_REGISTRY_URL organization variable is used'
+        description: 'Marketplace registry base URL; when empty, the MARKETPLACE_DEV_URL organization variable (dev registry) is used; pass vars.MARKETPLACE_URL for the production registry'
         type: string
         required: false
         default: ''
@@ -59,10 +59,10 @@ jobs:
     steps:
       - name: Check marketplace registry URL
         env:
-          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_REGISTRY_URL }}
+          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_DEV_URL }}
         run: |
           if [[ -z "${REGISTRY_URL}" ]]; then
-            echo "::error::Set the MARKETPLACE_REGISTRY_URL organization variable (for dev: https://dev.marketplace.reportportal.io) or pass registry_url"
+            echo "::error::Set the MARKETPLACE_DEV_URL organization variable (dev registry URL) or pass registry_url"
             exit 1
           fi
 
@@ -133,7 +133,7 @@ jobs:
 
       - name: Publish
         env:
-          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_REGISTRY_URL }}
+          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_DEV_URL }}
           AUDIENCE: ${{ inputs.audience }}
           JAR: ${{ steps.jar.outputs.path }}
           PLUGIN_ID: ${{ steps.jar.outputs.plugin_id }}
