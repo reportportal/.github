@@ -1,3 +1,11 @@
+# Retags an ECR image to the target registry (e.g. Docker Hub) when a release PR is approved.
+#
+# - Regular releases (PR into main/master from rc/*, hotfix/*, ...):
+#     ECR `latest` -> `<version>` and `latest`, where `<version>` is the semver from the PR title.
+# - Patches of already released versions (PR from `patch/*`, any base branch):
+#     ECR `<head commit sha>` -> `<version>` ONLY (version is the semver from the PR title). `latest` is never pushed, and an already existing
+#     `X.Y.Z` tag is never overwritten. The caller's build must therefore tag the patch image
+#     with the commit sha (additional-tag: ${{ github.sha }}) and must not tag it as `latest`.
 name: Retag and Release Docker Image
 
 on:
@@ -60,10 +68,17 @@ jobs:
 
     if: >
       github.event.review.state == 'approved' &&
-      (github.event.pull_request.base.ref == 'main' ||
-       github.event.pull_request.base.ref == 'master') &&
-      !startsWith(github.event.pull_request.head.ref, 'secure/')
-    
+      (
+        startsWith(github.event.pull_request.head.ref, 'patch/') ||
+        (
+          (github.event.pull_request.base.ref == 'main' ||
+           github.event.pull_request.base.ref == 'master') &&
+          !startsWith(github.event.pull_request.head.ref, 'secure/')
+        )
+      )
+
+    env:
+      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY || inputs.ecr-repository }}
 
     steps:
       - name: Checkout
@@ -91,15 +106,33 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME || secrets.REGESTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD || secrets.REGESTRY_PASSWORD }}
 
-      - name: Extract version tag from PR title
+      - name: Resolve version, source image and tags
         id: vars
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          TAG=$(echo "${{ github.event.pull_request.title }}" | sed -nE 's/.*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')
+          # Version always comes from the PR title.
+          TAG=$(echo "${PR_TITLE}" | sed -nE 's/.*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')
           if [ -z "$TAG" ]; then
             echo "No semver found in PR title"
             exit 1
           fi
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          if [[ "${HEAD_REF}" == patch/* ]]; then
+            # Patch of an already released version: the image is the one built from
+            # the approved commit, `latest` is not pushed.
+            SOURCE_TAG="${HEAD_SHA}"
+            IS_PATCH=true
+          else
+            SOURCE_TAG=latest
+            IS_PATCH=false
+          fi
+          {
+            echo "tag=${TAG}"
+            echo "source-tag=${SOURCE_TAG}"
+            echo "is-patch=${IS_PATCH}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -107,24 +140,63 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      - name: Wait for the patch image built from the approved commit
+        if: steps.vars.outputs.is-patch == 'true'
+        env:
+          SOURCE_TAG: ${{ steps.vars.outputs.source-tag }}
+        run: |
+          # The branch build may still be running when the PR is approved.
+          for i in $(seq 1 60); do
+            if aws ecr describe-images --repository-name "${ECR_REPOSITORY}" \
+                 --image-ids imageTag="${SOURCE_TAG}" >/dev/null 2>&1; then
+              echo "Image ${ECR_REPOSITORY}:${SOURCE_TAG} found in ECR"
+              exit 0
+            fi
+            echo "Image ${ECR_REPOSITORY}:${SOURCE_TAG} is not in ECR yet (attempt ${i}/60), waiting..."
+            sleep 30
+          done
+          echo "::error::No ECR image tagged with commit ${SOURCE_TAG}. Make sure the patch build succeeded for this commit and tagged it with the commit sha, then re-run this job."
+          exit 1
+
+      - name: Ensure patch version tag does not exist yet
+        if: steps.vars.outputs.is-patch == 'true'
+        env:
+          IMAGE_TAG: ${{ steps.vars.outputs.tag }}
+        run: |
+          TARGET="${{ inputs.target-registry }}/${{ inputs.target-repository }}"
+          if docker buildx imagetools inspect "${TARGET}:${IMAGE_TAG}" >/dev/null 2>&1; then
+            echo "::error::${TARGET}:${IMAGE_TAG} already exists, refusing to overwrite it."
+            exit 1
+          fi
+
       - name: Retag and push image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY || inputs.ecr-repository }}
           IMAGE_TAG: ${{ steps.vars.outputs.tag }}
+          SOURCE_TAG: ${{ steps.vars.outputs.source-tag }}
+          IS_PATCH: ${{ steps.vars.outputs.is-patch }}
         run: |
+          TARGET="${{ inputs.target-registry }}/${{ inputs.target-repository }}"
+          TAG_ARGS=(--tag "${TARGET}:${IMAGE_TAG}")
+          # Patches of old versions must never move the floating `latest` tag.
+          if [ "${IS_PATCH}" != "true" ]; then
+            TAG_ARGS+=(--tag "${TARGET}:latest")
+          fi
           docker buildx imagetools create \
-            $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            --tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:$IMAGE_TAG \
-            --tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:latest
+            "${ECR_REGISTRY}/${ECR_REPOSITORY}:${SOURCE_TAG}" \
+            "${TAG_ARGS[@]}"
 
       - name: Summary
         env:
           IMAGE_TAG: ${{ steps.vars.outputs.tag }}
+          IS_PATCH: ${{ steps.vars.outputs.is-patch }}
         run: |
           {
             echo "## Docker Release Summary"
             echo ""
             echo "- Image: ${{ inputs.target-registry }}/${{ inputs.target-repository }}:$IMAGE_TAG"
+            if [ "${IS_PATCH}" = "true" ]; then
+              echo "- Patch release: \`latest\` was not updated"
+            fi
             echo "- Commit: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)"
           } >> $GITHUB_STEP_SUMMARY
