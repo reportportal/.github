@@ -12,9 +12,10 @@ on:
   workflow_call:
     inputs:
       registry_url:
-        description: 'Marketplace registry base URL'
+        description: 'Marketplace registry base URL; when empty, the MARKETPLACE_DEV_URL organization variable (dev registry) is used; pass vars.MARKETPLACE_URL for the production registry'
         type: string
-        required: true
+        required: false
+        default: ''
       audience:
         description: 'OIDC audience; must equal the registry PUBLISH_OIDC_AUDIENCE'
         type: string
@@ -56,11 +57,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check marketplace registry URL
+        env:
+          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_DEV_URL }}
+        run: |
+          if [[ -z "${REGISTRY_URL}" ]]; then
+            echo "::error::Set the MARKETPLACE_DEV_URL organization variable (dev registry URL) or pass registry_url"
+            exit 1
+          fi
+
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Set up JDK ${{ inputs.java_version }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: ${{ inputs.java_version }}
@@ -123,7 +133,7 @@ jobs:
 
       - name: Publish
         env:
-          REGISTRY_URL: ${{ inputs.registry_url }}
+          REGISTRY_URL: ${{ inputs.registry_url || vars.MARKETPLACE_DEV_URL }}
           AUDIENCE: ${{ inputs.audience }}
           JAR: ${{ steps.jar.outputs.path }}
           PLUGIN_ID: ${{ steps.jar.outputs.plugin_id }}
