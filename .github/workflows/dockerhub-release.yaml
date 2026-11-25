@@ -27,6 +27,11 @@ on:
         required: false
         type: string
         default: rc
+      tag-latest:
+        required: false
+        type: boolean
+        default: true
+        description: 'Whether to tag and push image as latest'
     secrets:
       AWS_ROLE_ARN:
         required: false
@@ -61,7 +66,8 @@ jobs:
     if: >
       github.event.review.state == 'approved' &&
       (github.event.pull_request.base.ref == 'main' ||
-       github.event.pull_request.base.ref == 'master') &&
+       github.event.pull_request.base.ref == 'master' ||
+       startsWith(github.event.pull_request.base.ref, 'support/')) &&
       !startsWith(github.event.pull_request.head.ref, 'secure/')
     
 
@@ -112,11 +118,16 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY || inputs.ecr-repository }}
           IMAGE_TAG: ${{ steps.vars.outputs.tag }}
+          TAG_LATEST: ${{ inputs.tag-latest }}
         run: |
+          TAG_ARGS="--tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:$IMAGE_TAG"
+          if [ "${TAG_LATEST}" = "true" ]; then
+            TAG_ARGS="${TAG_ARGS} --tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:latest"
+          fi
+
           docker buildx imagetools create \
             $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            --tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:$IMAGE_TAG \
-            --tag ${{ inputs.target-registry }}/${{ inputs.target-repository }}:latest
+            ${TAG_ARGS}
 
       - name: Summary
         env:
